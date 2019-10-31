@@ -1,0 +1,714 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".CameraConfigActivity">
+
+    <LinearLayout
+        android:id="@+id/layout_main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/color_Tool_Text"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/imageButton_back"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0"
+                android:onClick="onClick"
+                app:srcCompat="?android:attr/actionModeCloseDrawable" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="0"
+                android:gravity="right"
+                android:orientation="horizontal">
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/button_usb"
+                style="@style/Widget.AppCompat.Button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:onClick="onClick"
+                android:text="打开"
+                android:textAllCaps="false" />
+
+            <Button
+                android:id="@+id/button_upgrade"
+                style="@style/Widget.AppCompat.Button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:onClick="onClick"
+                android:text="升级"
+                android:textAllCaps="false" />
+
+            <Button
+                android:id="@+id/button_sendfile"
+                style="@style/Widget.AppCompat.Button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:onClick="onClick"
+                android:text="传送文件"
+                android:textAllCaps="false" />
+
+            <Button
+                android:id="@+id/button_startHeart"
+                style="@style/Widget.AppCompat.Button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:onClick="onClick"
+                android:text="开启心跳"
+                android:textAllCaps="false" />
+
+            <Button
+                android:id="@+id/button_stopHeart"
+                style="@style/Widget.AppCompat.Button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:onClick="onClick"
+                android:text="关闭心跳"
+                android:textAllCaps="false" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:focusable="auto"
+            android:focusableInTouchMode="true"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/editText_ucmd"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="send usb cmd"
+                android:imeOptions="actionDone"
+                android:inputType="text"
+                android:nextFocusLeft="@id/editText_ucmd"
+                android:nextFocusUp="@id/editText_ucmd"
+                android:singleLine="true" />
+
+        </LinearLayout>
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                android:orientation="vertical"
+                android:scrollbars="horizontal|vertical">
+
+                <TextView
+                    android:id="@+id/textView_log"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/cam_config_log_background"
+                    android:scrollbars="horizontal|vertical" />
+            </LinearLayout>
+
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/textView_CommonSetting"
+                                android:layout_width="100dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="0"
+                                android:gravity="center"
+                                android:text="通用设置" />
+
+                            <Button
+                                android:id="@+id/button_getCommonSetting"
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="20dp"
+                                android:onClick="onClick"
+                                android:text="获取"
+                                android:textAllCaps="false" />
+
+                            <Button
+                                android:id="@+id/button_setCommonSetting"
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:onClick="onClick"
+                                android:text="设置并重启"
+                                android:textAllCaps="false" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginLeft="20dp"
+                            android:orientation="horizontal">
+
+                            <Switch
+                                android:id="@+id/switch_faceAEEnabled"
+                                android:layout_width="150dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="0"
+                                android:text="FaceAE使能" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginLeft="20dp"
+                            android:orientation="horizontal">
+
+                            <Switch
+                                android:id="@+id/switch_attributeRecog"
+                                android:layout_width="150dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="0"
+                                android:text="属性计算" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginLeft="20dp"
+                            android:orientation="horizontal"
+                            android:visibility="gone">
+
+                            <Switch
+                                android:id="@+id/switch_attributeTrack"
+                                android:layout_width="150dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="0"
+                                android:text="attributeTrack" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginLeft="20dp"
+                            android:orientation="horizontal"
+                            android:visibility="gone">
+
+                            <Switch
+                                android:id="@+id/switch_countAlgorithm"
+                                android:layout_width="150dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="0"
+                                android:text="countAlgorithm" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginLeft="20dp"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/textView_scoringInterval"
+                                android:layout_width="100dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="0"
+                                android:text="质量分计算间隔" />
+
+                            <EditText
+                                android:id="@+id/editText_scoringInterval"
+                                android:layout_width="100dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="0"
+                                android:ems="10"
+                                android:inputType="number|numberSigned|numberDecimal" />
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/textView9"
+                                android:layout_width="100dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="0"
+                                android:gravity="center"
+                                android:text="人脸检测阈值" />
+
+                            <Button
+                                android:id="@+id/button_getCaptureFilter"
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="20dp"
+                                android:onClick="onClick"
+                                android:text="获取"
+                                android:textAllCaps="false" />
+
+                            <Button
+                                android:id="@+id/button_setCaptureFilter"
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:onClick="onClick"
+                                android:text="设置"
+                                android:textAllCaps="false" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginLeft="20dp"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/textView10"
+                                android:layout_width="100dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="0"
+                                android:text="模糊度" />
+
+                            <EditText
+                                android:id="@+id/editText_blurThreshold"
+                                android:layout_width="100dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="0"
+                                android:ems="10"
+                                android:inputType="numberSigned|numberDecimal" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginLeft="20dp"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/textView11"
+                                android:layout_width="100dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="0"
+                                android:text="正脸" />
+
+                            <EditText
+                                android:id="@+id/editText_frontThreshold"
+                                android:layout_width="100dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="0"
+                                android:ems="10"
+                                android:inputType="numberSigned|numberDecimal" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginLeft="20dp"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/textView12"
+                                android:layout_width="100dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="0"
+                                android:text="质量" />
+
+                            <EditText
+                                android:id="@+id/editText_scoreThreshold"
+                                android:layout_width="100dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="0"
+                                android:ems="10"
+                                android:inputType="numberSigned|numberDecimal" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginLeft="20dp"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/textView13"
+                                android:layout_width="100dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="0"
+                                android:text="最大高度" />
+
+                            <EditText
+                                android:id="@+id/editText_heightMaxValue"
+                                android:layout_width="100dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="0"
+                                android:ems="10"
+                                android:inputType="numberSigned|numberDecimal" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginLeft="20dp"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/textView14"
+                                android:layout_width="100dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="0"
+                                android:text="最小高度" />
+
+                            <EditText
+                                android:id="@+id/editText_heightMinValue"
+                                android:layout_width="100dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="0"
+                                android:ems="10"
+                                android:inputType="numberSigned|numberDecimal" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginLeft="20dp"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/textView15"
+                                android:layout_width="100dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="0"
+                                android:text="最大宽度" />
+
+                            <EditText
+                                android:id="@+id/editText_widthMaxValue"
+                                android:layout_width="100dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="0"
+                                android:ems="10"
+                                android:inputType="numberSigned|numberDecimal" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginLeft="20dp"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/textView16"
+                                android:layout_width="100dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="0"
+                                android:text="最小宽度" />
+
+                            <EditText
+                                android:id="@+id/editText_widthMinValue"
+                                android:layout_width="100dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="0"
+                                android:ems="10"
+                                android:inputType="numberSigned|numberDecimal" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginLeft="20dp"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/textView17"
+                                android:layout_width="100dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="0"
+                                android:text="Pitch最大值" />
+
+                            <EditText
+                                android:id="@+id/editText_pitchMaxValue"
+                                android:layout_width="100dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="0"
+                                android:ems="10"
+                                android:inputType="numberSigned|numberDecimal" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginLeft="20dp"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/textView18"
+                                android:layout_width="100dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="0"
+                                android:text="Pitch最小值" />
+
+                            <EditText
+                                android:id="@+id/editText_pitchMinValue"
+                                android:layout_width="100dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="0"
+                                android:ems="10"
+                                android:inputType="numberSigned|numberDecimal" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginLeft="20dp"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/textView19"
+                                android:layout_width="100dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="0"
+                                android:text="Roll最大值" />
+
+                            <EditText
+                                android:id="@+id/editText_rollMaxValue"
+                                android:layout_width="100dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="0"
+                                android:ems="10"
+                                android:inputType="numberSigned|numberDecimal" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginLeft="20dp"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/textView20"
+                                android:layout_width="100dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="0"
+                                android:text="Roll最小值" />
+
+                            <EditText
+                                android:id="@+id/editText_rollMinValue"
+                                android:layout_width="100dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="0"
+                                android:ems="10"
+                                android:inputType="numberSigned|numberDecimal" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginLeft="20dp"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/textView21"
+                                android:layout_width="100dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="0"
+                                android:text="Yaw最大值" />
+
+                            <EditText
+                                android:id="@+id/editText_yawMaxValue"
+                                android:layout_width="100dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="0"
+                                android:ems="10"
+                                android:inputType="numberSigned|numberDecimal" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginLeft="20dp"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/textView22"
+                                android:layout_width="100dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="0"
+                                android:text="Yaw最小值" />
+
+                            <EditText
+                                android:id="@+id/editText_yawMinValue"
+                                android:layout_width="100dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="0"
+                                android:ems="10"
+                                android:inputType="numberSigned|numberDecimal" />
+                        </LinearLayout>
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="5dp"
+                        android:background="@drawable/border"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:padding="5dp">
+
+                        <TextView
+                            android:id="@+id/textView2"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="人脸识别"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/textView"
+                                android:layout_width="120dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginRight="5dp"
+                                android:layout_weight="0"
+                                android:gravity="right"
+                                android:text="识别阈值(推荐0.4)" />
+
+                            <EditText
+                                android:id="@+id/editText_feature_threshold"
+                                android:layout_width="250dp"
+                                android:layout_height="40dp"
+                                android:layout_weight="0"
+                                android:ems="10"
+                                android:inputType="number|numberSigned|numberDecimal" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/textView_faceMatch_mode"
+                                android:layout_width="120dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginRight="5dp"
+                                android:layout_weight="0"
+                                android:gravity="right"
+                                android:text="人脸对比模式" />
+
+                            <Spinner
+                                android:id="@+id/spinner_facematch_mod"
+                                android:layout_width="250dp"
+                                android:layout_height="40dp"
+                                android:layout_weight="0"
+                                android:entries="@array/facematch_mode" />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/textView_livedetect"
+                                android:layout_width="120dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginRight="5dp"
+                                android:layout_weight="0"
+                                android:gravity="right"
+                                android:text="活体检测" />
+
+                            <Switch
+                                android:id="@+id/switch_livedetect"
+                                android:layout_width="250dp"
+                                android:layout_height="40dp"
+                                android:layout_weight="0" />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/textView_faceinfo"
+                                android:layout_width="120dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginRight="5dp"
+                                android:layout_weight="0"
+                                android:gravity="right"
+                                android:text="显示人脸信息" />
+
+                            <Switch
+                                android:id="@+id/switch_faceinfo"
+                                android:layout_width="250dp"
+                                android:layout_height="40dp"
+                                android:layout_weight="0" />
+
+                        </LinearLayout>
+
+
+                    </LinearLayout>
+                </LinearLayout>
+            </ScrollView>
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+</android.support.constraint.ConstraintLayout>

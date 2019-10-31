@@ -1,0 +1,73 @@
+apply from: this.rootProject.file('common.gradle')
+
+buildscript {
+
+    repositories {
+        google()
+        jcenter()
+        mavenCentral()
+        maven { url 'https://maven.google.com' }
+        maven {
+            url 'http://192.168.6.117:8081/repository/common-releases/'
+            credentials{
+                username 'admin'
+                password 'admin123'
+            }
+        }
+        maven {
+            url 'http://192.168.6.117:8081/repository/common-snapshots/'
+            credentials{
+                username 'admin'
+                password 'admin123'
+            }
+        }
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.5.0'
+        classpath 'org.greenrobot:greendao-gradle-plugin:3.2.2'
+
+
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        jcenter()
+        maven { url 'https://jitpack.io' }
+        maven {
+            url 'http://192.168.2.233:8081/repository/maven-snapshots/'
+            credentials{
+                username 'jialei'
+                password 'jialei'
+            }
+        }
+        maven {
+            url 'http://192.168.2.233:8081/repository/maven-snapshots/'
+            credentials{
+                username 'jialei'
+                password 'jialei'
+            }
+        }
+//        maven {
+//            url 'http://192.168.6.117:8081/repository/common-releases/'
+//            credentials{
+//                username 'admin'
+//                password 'admin123'
+//            }
+//        }
+//        maven {
+//            url 'http://192.168.6.117:8081/repository/common-snapshots/'
+//            credentials{
+//                username 'admin'
+//                password 'admin123'
+//            }
+//        }
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
