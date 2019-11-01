@@ -13,7 +13,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
-import com.common.lib_base.CommonLogger;
 
 /**
  * 一个轻量的后台job service,利用空闲时间执行一些小事情，提高进程不被回收的概率
@@ -52,7 +51,7 @@ public class AliveJobService extends JobService {
                     Log.d(TAG, "APP现状：杀死，重启...");
                 }
             } else {
-                CommonLogger.d(TAG,"intent"+packageName+action+className+type);
+                Log.d(TAG,"intent"+packageName+action+className+type);
                 if (packageName != null && action != null && className != null&&type!=0) {
                     switch (type){
                         case CLASS:
@@ -89,7 +88,13 @@ public class AliveJobService extends JobService {
         }
     }
 
-    //拉起保活
+
+    /**
+     * 拉起保活
+     *
+     *eg:AliveJobService.start(context, context.getPackageName(), DaemonService.class.getName(), KeepAliveReceiver.LINE_SCREEN, false, AliveJobService.SERVICE);
+     */
+
     public static void start(Context context, String packageName, String className, String action, boolean needTop,int type) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             mContext = context;
