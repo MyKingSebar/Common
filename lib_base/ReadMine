@@ -1,0 +1,13 @@
+
+
+使用
+初始化：AppUtils.syncIsDebug(Context context)
+判断是不是debug模式：AppUtils.isDebug()
+Log使用：
+CommonLogger.builder.isDebug().tag().level().builder();
+CommonLogger.i()
+CommonLogger.i(TAG,"")
+
+
+debug显示，release显示+日志存本地(默认logger)
+引入相关 compileOnly rootProject.depsLibs.logger

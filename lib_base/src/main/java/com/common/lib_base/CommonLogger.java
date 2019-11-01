@@ -123,6 +123,7 @@ public final class CommonLogger {
             CommonLogger.debug = isDebug;
             CommonLogger.tag = tag;
             CommonLogger.LEVEL = level;
+            init();
         }
     }
 }
