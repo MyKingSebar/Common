@@ -21,8 +21,8 @@ import android.util.Log;
 public class AliveJobService extends JobService {
     private static final String TAG = AliveJobService.class.getName();
 
-    public static final int CLASS=1;
-    public static final int SERVICE=2;
+    public static final int CLASS = 1;
+    public static final int SERVICE = 2;
 
     private static String packageName = null;
     private static String action = null;
@@ -51,9 +51,9 @@ public class AliveJobService extends JobService {
                     Log.d(TAG, "APP现状：杀死，重启...");
                 }
             } else {
-                Log.d(TAG,"intent"+packageName+action+className+type);
-                if (packageName != null && action != null && className != null&&type!=0) {
-                    switch (type){
+                Log.d(TAG, "intent" + packageName + action + className + type);
+                if (packageName != null && action != null && className != null && type != 0) {
+                    switch (type) {
                         case CLASS:
                             if (!SystemUtils.isActivityExisted(getApplicationContext(), packageName, className)) {
                                 getApplicationContext().sendBroadcast(new Intent(AliveJobService.action));
@@ -61,7 +61,7 @@ public class AliveJobService extends JobService {
                             }
                             break;
                         case SERVICE:
-                            if(!SystemUtils.isServiceExisted(getApplicationContext(), className)){
+                            if (!SystemUtils.isServiceExisted(getApplicationContext(), className)) {
                                 getApplicationContext().sendBroadcast(new Intent(AliveJobService.action));
                                 Log.d(TAG, "APP现状：杀死，重启...");
                             }
@@ -91,11 +91,11 @@ public class AliveJobService extends JobService {
 
     /**
      * 拉起保活
-     *
-     *eg:AliveJobService.start(context, context.getPackageName(), DaemonService.class.getName(), KeepAliveReceiver.LINE_SCREEN, false, AliveJobService.SERVICE);
+     * <p>
+     * eg:AliveJobService.start(context, context.getPackageName(), DaemonService.class.getName(), KeepAliveReceiver.LINE_SCREEN, false, AliveJobService.SERVICE);
      */
 
-    public static void start(Context context, String packageName, String className, String action, boolean needTop,int type) {
+    public static void start(Context context, String packageName, String className, String action, boolean needTop, int type) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             mContext = context;
             Intent intent = new Intent(context, AliveJobService.class);
