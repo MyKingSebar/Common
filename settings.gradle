@@ -1,1 +1,7 @@
-include ':app', ':localtest', ':lib_imageloader',':lib_pullalive', ':lib_base'
+include ':app',
+        ':localtest',
+        ':lib_imageloader',
+        ':lib_pullalive',
+        ':lib_base',
+        ':lib_log',
+        ':framework'

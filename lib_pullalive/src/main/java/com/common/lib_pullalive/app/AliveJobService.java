@@ -13,6 +13,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
+import com.common.lib_base.CommonLogger;
 
 /**
  * 一个轻量的后台job service,利用空闲时间执行一些小事情，提高进程不被回收的概率
@@ -21,8 +22,10 @@ import android.util.Log;
 public class AliveJobService extends JobService {
     private static final String TAG = AliveJobService.class.getName();
 
-    public static final int CLASS = 1;
-    public static final int SERVICE = 2;
+    private static volatile boolean sAlive = false;
+
+    public static final int CLASS=1;
+    public static final int SERVICE=2;
 
     private static String packageName = null;
     private static String action = null;
@@ -44,16 +47,20 @@ public class AliveJobService extends JobService {
 //                Log.d(TAG, "mContextAPP现状：杀死，重启...");
 //                return true;
 //            }
-
+            Context mContext=getApplicationContext();
+            if(null==mContext){
+                Log.d(TAG,"getApplicationContext()==null");
+                return true;
+            }
             if (needTop) {
                 if (mContext == null || !SystemUtils.isAppOnForeground(mContext)) {
                     getApplicationContext().sendBroadcast(new Intent(AliveJobService.action));
                     Log.d(TAG, "APP现状：杀死，重启...");
                 }
             } else {
-                Log.d(TAG, "intent" + packageName + action + className + type);
-                if (packageName != null && action != null && className != null && type != 0) {
-                    switch (type) {
+                CommonLogger.d(TAG,"intent"+packageName+action+className+type);
+                if (packageName != null && action != null && className != null&&type!=0) {
+                    switch (type){
                         case CLASS:
                             if (!SystemUtils.isActivityExisted(getApplicationContext(), packageName, className)) {
                                 getApplicationContext().sendBroadcast(new Intent(AliveJobService.action));
@@ -61,7 +68,7 @@ public class AliveJobService extends JobService {
                             }
                             break;
                         case SERVICE:
-                            if (!SystemUtils.isServiceExisted(getApplicationContext(), className)) {
+                            if(!SystemUtils.isServiceExisted(getApplicationContext(), className)){
                                 getApplicationContext().sendBroadcast(new Intent(AliveJobService.action));
                                 Log.d(TAG, "APP现状：杀死，重启...");
                             }
@@ -72,7 +79,6 @@ public class AliveJobService extends JobService {
 
                 }
             }
-
             jobFinished((JobParameters) msg.obj, false);
 
             return true;
@@ -81,22 +87,17 @@ public class AliveJobService extends JobService {
 
     //普通保活
     public static void start(Context context) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (!AliveJobService.isJobServiceAlive() || Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             mContext = context;
             Intent intent = new Intent(context, AliveJobService.class);
             context.startService(intent);
         }
     }
 
+    //拉起保活
+    public static void start(Context context, String packageName, String className, String action, boolean needTop,int type) {
 
-    /**
-     * 拉起保活
-     * <p>
-     * eg:AliveJobService.start(context, context.getPackageName(), DaemonService.class.getName(), KeepAliveReceiver.LINE_SCREEN, false, AliveJobService.SERVICE);
-     */
-
-    public static void start(Context context, String packageName, String className, String action, boolean needTop, int type) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (!AliveJobService.isJobServiceAlive() || Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             mContext = context;
             Intent intent = new Intent(context, AliveJobService.class);
             intent.putExtra("packageName", packageName);
@@ -107,15 +108,19 @@ public class AliveJobService extends JobService {
             context.startService(intent);
         }
     }
-
+    public static boolean isJobServiceAlive() {
+        return sAlive;
+    }
     @Override
     public void onCreate() {
         super.onCreate();
+        Log.d(TAG,"onCreate");
         mJobScheduler = (JobScheduler) getSystemService(Context.JOB_SCHEDULER_SERVICE);
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.d(TAG,"onStartCommand");
         JobInfo job = initJobInfo(startId);
         if (mJobScheduler.schedule(job) <= 0) {
             Log.d(TAG, "AliveJobService failed");
@@ -144,6 +149,8 @@ public class AliveJobService extends JobService {
     //开始任务
     @Override
     public boolean onStartJob(JobParameters params) {
+        Log.e(TAG,"onStartJob"+params);
+        sAlive = true;
         mJobHandler.sendMessage(Message.obtain(mJobHandler, 1, params));
         return true;
     }
@@ -151,7 +158,10 @@ public class AliveJobService extends JobService {
     //结束任务
     @Override
     public boolean onStopJob(JobParameters params) {
-        mJobHandler.sendEmptyMessage(1);
+        Log.e(TAG,"onStopJob"+params);
+        sAlive = false;
+        mJobHandler.removeMessages(1);
+//        mJobHandler.sendMessage(Message.obtain(mJobHandler, 1, params));
         return false;
     }
 

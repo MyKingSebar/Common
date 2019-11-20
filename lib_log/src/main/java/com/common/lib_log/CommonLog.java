@@ -1,13 +1,16 @@
-package com.common.lib_base;
+package com.common.lib_log;
 
-import com.tencent.mars.xlog.Log;
+import android.content.Context;
+import android.text.TextUtils;
+import android.util.Log;
+
 
 /**
  * 写文件需要动态申请
  */
-public final class CommonLogger {
+public final class CommonLog {
     private static Boolean debug = null;
-    private static String tag = CommonLogger.class.getSimpleName();
+    private static String tag = "CommonLog";
     public static final int VERBOSE = 1;
     public static final int DEBUG = 2;
     public static final int INFO = 3;
@@ -16,7 +19,7 @@ public final class CommonLogger {
     public static final int NOTHING = 6;
 
     //控制log等级
-    private static int LEVEL = VERBOSE;
+    private static int LEVEL = DEBUG;
 
     public static void v(String tag, String message) {
         if (LEVEL <= VERBOSE) {
@@ -31,7 +34,7 @@ public final class CommonLogger {
 
     public static void d(String tag, String message) {
         if (LEVEL <= DEBUG) {
-            Log.d(tag,message);
+            Log.v(tag,message);
         }
     }
 
@@ -69,20 +72,44 @@ public final class CommonLogger {
             Log.e(tag,message);
         }
     }
-    public static void e(String message) {
+    public static void e( String message) {
         if (LEVEL <= ERROR) {
             Log.e(tag,message);
         }
     }
 
-    public static void init() {
-
+    public static void init(Context context,String filePath,String cachefilepath,String namePrefix) {
+//        CsvFormatStrategy formatStrategy = CsvFormatStrategy.newBuilder()
+//                .tag(tag)
+//                .build();
+//        if (getDebug()) {
+//            Logger.addLogAdapter(new AndroidLogAdapter() {
+//                // 是否开启打印功能，返回true则打印，否则不打印
+//                @Override
+//                public boolean isLoggable(int priority, String tag) {
+//                    return true;
+//                }
+//            });
+//        } else {
+//            Logger.addLogAdapter(new AndroidLogAdapter() {
+//                // 是否开启打印功能，返回true则打印，否则不打印
+//                @Override
+//                public boolean isLoggable(int priority, String tag) {
+//                    return true;
+//                }
+//            });
+//            Logger.addLogAdapter(new DiskLogAdapter(formatStrategy));
+//        }
+        CommonXlog.initLog(context.getApplicationContext(), filePath, context.getFilesDir() + "/xlog", namePrefix);
 
     }
 
+    public static void onDestory(){
+        CommonXlog.logDestory();
+    }
     private static boolean getDebug() {
         if (debug == null) {
-            return AppUtils.isDebug();
+            return TextUtils.equals("debug",BuildConfig.BUILD_TYPE);
         } else {
             return debug;
         }
@@ -109,10 +136,9 @@ public final class CommonLogger {
         }
 
         public void build() {
-            CommonLogger.debug = isDebug;
-            CommonLogger.tag = tag;
-            CommonLogger.LEVEL = level;
-            init();
+            CommonLog.debug = isDebug;
+            CommonLog.tag = tag;
+            CommonLog.LEVEL = level;
         }
     }
 }

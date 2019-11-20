@@ -3,10 +3,7 @@ package com.common.lib_pullalive.app;
 import android.app.ActivityManager;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
-import android.os.Build;
 import android.text.TextUtils;
-import android.util.Log;
 import android.widget.Toast;
 
 import java.io.DataOutputStream;
@@ -91,18 +88,15 @@ public class SystemUtils {
      * @return
      */
     public static boolean isActivityExisted(Context context, String packageName, String className) {
-        if (context == null || TextUtils.isEmpty(className)) {
+        if (context == null || TextUtils.isEmpty(className))
             return false;
-        }
         ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
         List<ActivityManager.RunningTaskInfo> list = am.getRunningTasks(100);
         if (list != null && list.size() > 0) {
             for (ActivityManager.RunningTaskInfo info : list) {
                 ComponentName cpn = info.topActivity;
-                if (className.equals(cpn.getClassName())) {
+                if (className.equals(cpn.getClassName()))
                     return true;
-                }
-
             }
         }
         return false;

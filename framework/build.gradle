@@ -9,7 +9,7 @@ android {
         versionCode rootProject.android.versionCode
         versionName rootProject.android.versionName
 
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles 'consumer-rules.pro'
     }
 
@@ -24,6 +24,4 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-//    compileOnly rootProject.depsLibs.logger
-    compileOnly rootProject.depsLibs.mars_xlog
 }
