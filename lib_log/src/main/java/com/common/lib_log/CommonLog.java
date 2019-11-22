@@ -109,7 +109,7 @@ public final class CommonLog {
     }
     private static boolean getDebug() {
         if (debug == null) {
-            return TextUtils.equals("debug",BuildConfig.BUILD_TYPE);
+            return TextUtils.equals("debug", BuildConfig.BUILD_TYPE);
         } else {
             return debug;
         }
