@@ -27,3 +27,5 @@ Application配置
 
 应用退出时调用：
 CommonLog.onDestory();
+
+注意：buildconfig.buildtype这个一直是release，所以想控制台输出日志需要传debug进来

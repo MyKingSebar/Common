@@ -20,7 +20,7 @@ public final class CommonLog {
     public static final int NOTHING = 6;
 
     //控制log等级
-    private static int LEVEL = DEBUG;
+    private static int LEVEL = VERBOSE;
 
     public static void v(String tag, String message) {
         if (LEVEL <= VERBOSE) {
@@ -35,7 +35,7 @@ public final class CommonLog {
 
     public static void d(String tag, String message) {
         if (LEVEL <= DEBUG) {
-            Log.v(tag,message);
+            Log.d(tag,message);
         }
     }
 
@@ -101,8 +101,10 @@ public final class CommonLog {
 //            });
 //            Logger.addLogAdapter(new DiskLogAdapter(formatStrategy));
 //        }
-        CommonXlog.initLog(context.getApplicationContext(), filePath, context.getFilesDir() + "/xlog", namePrefix);
-
+        CommonXlog.initLog(context.getApplicationContext(), filePath, context.getFilesDir() + "/xlog", namePrefix,null);
+    }
+    public static void init(Context context,String filePath,String cachefilepath,String namePrefix,boolean isDebug) {
+        CommonXlog.initLog(context.getApplicationContext(), filePath, context.getFilesDir() + "/xlog", namePrefix,isDebug);
     }
 
     public static void onDestory(){
