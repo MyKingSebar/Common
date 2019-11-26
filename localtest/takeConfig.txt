@@ -25,6 +25,7 @@
 {"eventId":21,"describe":"21~30","url":"http://192.168.2.53/group1/M00/00/61/wKgCNV2gG4KAUDNJAAWP_DK_c6o274.png","eventPriority":"5" , "duration":5000,"type":1 },
 {"eventId":22,"describe":"31~40","url":"http://192.168.2.53/group1/M00/00/61/wKgCNV2gG4KAdPukAASF8X2v1Fw875.jpg","eventPriority":"6" , "duration":5000,"type":1 },
 {"eventId":23,"describe":"41~50","url":"http://192.168.2.53/group1/M00/00/61/wKgCNV2gG4KAdPukAASF8X2v1Fw875.jpg","eventPriority":"6" , "duration":5000,"type":1 },
-{"eventId":24,"describe":">50","url":"http://192.168.2.53/group1/M00/00/61/wKgCNV2gG4KAHLyvAAWJ3ew3t9I699.png","eventPriority":"7" , "duration":5000,"type":1 }
+{"eventId":24,"describe":">50","url":"http://192.168.2.53/group1/M00/00/61/wKgCNV2gG4KAHLyvAAWJ3ew3t9I699.png","eventPriority":"7" , "duration":5000,"type":1 },
+{"eventId":30,"describe":"4A4400089C48","url":"http://192.168.2.53/group1/M00/00/61/wKgCNV2gG4KAHLyvAAWJ3ew3t9I699.png","eventPriority":"7" , "duration":5000,"type":1 }
     ]
     }

@@ -2,7 +2,8 @@ package com.common.lib_log;
 
 import android.content.Context;
 import android.text.TextUtils;
-import android.util.Log;
+
+import com.tencent.mars.xlog.Log;
 
 
 /**
@@ -105,6 +106,7 @@ public final class CommonLog {
     }
 
     public static void onDestory(){
+        CommonLog.e("CommonLog onDestroy");
         CommonXlog.logDestory();
     }
     private static boolean getDebug() {

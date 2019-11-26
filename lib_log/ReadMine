@@ -1,0 +1,29 @@
+
+使用
+Application配置
+
+    /**
+     * 初始化 日志
+     */
+    private void initLogger() {
+        //使用自定义全局异常捕获类
+        UnCatchExceptionHandler.getInstance().init(this);
+    }
+使用使用初始化：
+    /**
+     * 初始化 日志
+     */
+    private void initLog() {
+        int version = android.os.Build.VERSION.SDK_INT;
+        String sdcard=null;
+        if (version >= 29) {
+            sdcard=getExternalFilesDir(null).getPath();
+        }else{
+            sdcard = Environment.getExternalStorageDirectory().getAbsolutePath();
+        }
+
+        CommonLog.init(this,sdcard+ "/daemon/log",null,"daemon");
+    }
+
+应用退出时调用：
+CommonLog.onDestory();

@@ -1,9 +1,9 @@
 apply plugin: 'com.android.library'
 apply plugin: 'maven'
 
-def pomVersionName = '1.0.1-SNAPSHOT'
+def pomVersionName = '1.0.0-SNAPSHOT'
 def pomName = this.getName()
-def pomDescription = 'localtest'
+def pomDescription = 'the permission library for all project'
 def versionString = '1.0'
 def versionNumber = 1
 
@@ -31,7 +31,11 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    compileOnly rootProject.depsLibs.gson
+    compileOnly rootProject.depsLibs.appcompactx
+    implementation rootProject.depsLibs.rxpermissions
+    implementation rootProject.depsLibs.rxjava
+    //下面这个不行
+//    compileOnly rootProject.depsLibs.rxjava
 }
 
 uploadArchives {

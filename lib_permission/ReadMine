@@ -1,0 +1,38 @@
+
+使用：
+
+因为用了rxjava所以oncreat里需要
+RxJavaPlugins.setErrorHandler(new Consumer<Throwable>() {
+            @Override
+            public void accept(Throwable throwable) {
+                //异常处理
+                Log.e("Rxjava","onError:"+throwable.getMessage());
+            }
+        });
+ 调用：
+         CommonPermission.getInstance(MainActivity.this).requestPermissions(
+                 new IPermissionCallback() {
+                     @Override
+                     public void onSuccess() {
+                         Log.e("takeshow", "onSuccess");
+                         start();
+                         if(!AppApplication.useActivity){
+                             finish();
+                         }
+                     }
+
+                     @Override
+                     public void onFail() {
+                         Log.e("takeshow", "permission fail");
+                     }
+                 }, Manifest.permission.ACCESS_COARSE_LOCATION,
+                 Manifest.permission.ACCESS_FINE_LOCATION,
+                 Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+   应用退出时调用：
+   Commonpermission.onDestory();
+
+
+引用：
+主app需要：implementation rootProject.depsLibs.rxjava
+（备注：rxjava moudle里不能编译时引用所以用的imp方式）

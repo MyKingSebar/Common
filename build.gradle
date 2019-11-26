@@ -7,6 +7,8 @@ buildscript {
         jcenter()
         mavenCentral()
         maven { url 'https://maven.google.com' }
+        //阿里云镜像库
+        maven { url "http://maven.aliyun.com/nexus/content/groups/public/" }
         maven {
             url 'http://192.168.6.117:8081/repository/common-releases/'
             credentials{
@@ -36,7 +38,10 @@ allprojects {
     repositories {
         google()
         jcenter()
+        mavenCentral()
         maven { url 'https://jitpack.io' }
+        //阿里云镜像库
+        maven { url "http://maven.aliyun.com/nexus/content/groups/public/" }
         maven {
             url 'http://192.168.2.233:8081/repository/maven-snapshots/'
             credentials{

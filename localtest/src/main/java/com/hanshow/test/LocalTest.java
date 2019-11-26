@@ -5,6 +5,15 @@ import android.content.Intent;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+
 
 public class LocalTest {
     private static final String TAG = "LocalTest";
@@ -142,5 +151,45 @@ public class LocalTest {
 
     public static void disposData(Context context, float location) {
         sendLocalMessage(context, (int) location);
+    }
+
+    public static LocalTestBean readTestConfig() {
+        String configStr = null;
+        File file = null;
+        try {
+            file = new File(TestConfig.CONFIGPATH);
+        } catch (NullPointerException e) {
+            Log.e(TAG, e.getMessage());
+        }
+
+        try {
+            if (!file.exists()) { // file did not exist
+                configStr = TestConfig.DEFAULTTEST;
+                Log.d(TAG, "readTestConfig:" + configStr);
+                if (file.createNewFile()) {
+                    BufferedWriter bw = new BufferedWriter(new FileWriter(file));
+                    bw.write(configStr, 0, configStr.length());
+                    bw.close();
+                }
+
+
+            } else { // file exists
+                BufferedReader br = new BufferedReader(new FileReader(file));
+                StringBuilder sb = new StringBuilder();
+                int c;
+                while ((c = br.read()) != -1) {
+                    sb.append((char) c);
+                }
+                br.close();
+                configStr = sb.toString();
+            }
+
+            Gson gson = new Gson();
+            return gson.fromJson(configStr, LocalTestBean.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 }

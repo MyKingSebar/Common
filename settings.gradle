@@ -4,4 +4,5 @@ include ':app',
         ':lib_pullalive',
         ':lib_base',
         ':lib_log',
+        ':lib_permission',
         ':framework'
