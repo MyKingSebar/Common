@@ -1,8 +1,9 @@
 package com.hanshow.test;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class LocalTestBean {
+public class LocalTestBean implements Serializable {
 
     /**
      * takeState : true
@@ -38,7 +39,7 @@ public class LocalTestBean {
         this.eventList = eventList;
     }
 
-    public static class EventListBean {
+    public static class EventListBean implements Serializable{
         /**
          * eventId : 1
          * describe : 1

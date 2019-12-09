@@ -11,9 +11,9 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 
-import com.common.lib_base.CommonLogger;
+import com.common.lib_log.CommonLog;
+
 
 /**
  * 一个轻量的后台job service,利用空闲时间执行一些小事情，提高进程不被回收的概率
@@ -24,8 +24,8 @@ public class AliveJobService extends JobService {
 
     private static volatile boolean sAlive = false;
 
-    public static final int CLASS=1;
-    public static final int SERVICE=2;
+    public static final int CLASS = 1;
+    public static final int SERVICE = 2;
 
     private static String packageName = null;
     private static String action = null;
@@ -40,37 +40,37 @@ public class AliveJobService extends JobService {
 
         @Override
         public boolean handleMessage(Message msg) {
-            Log.d(TAG, "pull alive." + ",packageName:" + packageName + ",action:" + action + ",className:" + className);
+            CommonLog.d(TAG, "pull alive." + ",packageName:" + packageName + ",action:" + action + ",className:" + className);
 //            if(mContext==null){
 //                //只要不在前台就会空
 //                getApplicationContext().sendBroadcast(new Intent(AliveJobService.action));
-//                Log.d(TAG, "mContextAPP现状：杀死，重启...");
+//                CommonLog.d(TAG, "mContextAPP现状：杀死，重启...");
 //                return true;
 //            }
-            Context mContext=getApplicationContext();
-            if(null==mContext){
-                Log.d(TAG,"getApplicationContext()==null");
+            Context mContext = getApplicationContext();
+            if (null == mContext) {
+                CommonLog.d(TAG, "getApplicationContext()==null");
                 return true;
             }
             if (needTop) {
                 if (mContext == null || !SystemUtils.isAppOnForeground(mContext)) {
                     getApplicationContext().sendBroadcast(new Intent(AliveJobService.action));
-                    Log.d(TAG, "APP现状：杀死，重启...");
+                    CommonLog.d(TAG, "APP现状：杀死，重启...");
                 }
             } else {
-                CommonLogger.d(TAG,"intent"+packageName+action+className+type);
-                if (packageName != null && action != null && className != null&&type!=0) {
-                    switch (type){
+                CommonLog.d(TAG, "intent" + packageName + action + className + type);
+                if (packageName != null && action != null && className != null && type != 0) {
+                    switch (type) {
                         case CLASS:
                             if (!SystemUtils.isActivityExisted(getApplicationContext(), packageName, className)) {
                                 getApplicationContext().sendBroadcast(new Intent(AliveJobService.action));
-                                Log.d(TAG, "APP现状：杀死，重启...");
+                                CommonLog.d(TAG, "APP现状：杀死，重启...");
                             }
                             break;
                         case SERVICE:
-                            if(!SystemUtils.isServiceExisted(getApplicationContext(), className)){
+                            if (!SystemUtils.isServiceExisted(getApplicationContext(), className)) {
                                 getApplicationContext().sendBroadcast(new Intent(AliveJobService.action));
-                                Log.d(TAG, "APP现状：杀死，重启...");
+                                CommonLog.d(TAG, "APP现状：杀死，重启...");
                             }
                             break;
                         default:
@@ -95,7 +95,7 @@ public class AliveJobService extends JobService {
     }
 
     //拉起保活
-    public static void start(Context context, String packageName, String className, String action, boolean needTop,int type) {
+    public static void start(Context context, String packageName, String className, String action, boolean needTop, int type) {
 
         if (!AliveJobService.isJobServiceAlive() || Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             mContext = context;
@@ -108,24 +108,26 @@ public class AliveJobService extends JobService {
             context.startService(intent);
         }
     }
+
     public static boolean isJobServiceAlive() {
         return sAlive;
     }
+
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.d(TAG,"onCreate");
+        CommonLog.d(TAG, "onCreate");
         mJobScheduler = (JobScheduler) getSystemService(Context.JOB_SCHEDULER_SERVICE);
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.d(TAG,"onStartCommand");
+        CommonLog.d(TAG, "onStartCommand");
         JobInfo job = initJobInfo(startId);
         if (mJobScheduler.schedule(job) <= 0) {
-            Log.d(TAG, "AliveJobService failed");
+            CommonLog.d(TAG, "AliveJobService failed");
         } else {
-            Log.d(TAG, "AliveJobService success");
+            CommonLog.d(TAG, "AliveJobService success");
         }
         if (intent.hasExtra("packageName")) {
             AliveJobService.packageName = intent.getStringExtra("packageName");
@@ -149,7 +151,7 @@ public class AliveJobService extends JobService {
     //开始任务
     @Override
     public boolean onStartJob(JobParameters params) {
-        Log.e(TAG,"onStartJob"+params);
+        CommonLog.e(TAG, "onStartJob" + params);
         sAlive = true;
         mJobHandler.sendMessage(Message.obtain(mJobHandler, 1, params));
         return true;
@@ -158,7 +160,7 @@ public class AliveJobService extends JobService {
     //结束任务
     @Override
     public boolean onStopJob(JobParameters params) {
-        Log.e(TAG,"onStopJob"+params);
+        CommonLog.e(TAG, "onStopJob" + params);
         sAlive = false;
         mJobHandler.removeMessages(1);
 //        mJobHandler.sendMessage(Message.obtain(mJobHandler, 1, params));

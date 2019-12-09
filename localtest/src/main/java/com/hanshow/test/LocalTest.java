@@ -160,6 +160,7 @@ public class LocalTest {
             file = new File(TestConfig.CONFIGPATH);
         } catch (NullPointerException e) {
             Log.e(TAG, e.getMessage());
+            return null;
         }
 
         try {
@@ -188,6 +189,7 @@ public class LocalTest {
             return gson.fromJson(configStr, LocalTestBean.class);
         } catch (IOException e) {
             e.printStackTrace();
+
         }
 
         return null;
