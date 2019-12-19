@@ -22,7 +22,7 @@ Application配置
             sdcard = Environment.getExternalStorageDirectory().getAbsolutePath();
         }
 
-        CommonLog.init(this,sdcard+ "/daemon/log",null,"daemon");
+        CommonLog.init(this,sdcard+ "/daemon/log",null,"daemon",true);
     }
 
 应用退出时调用：

@@ -95,6 +95,7 @@ public class SystemUtils {
         List<ActivityManager.RunningTaskInfo> list = am.getRunningTasks(100);
         if (list != null && list.size() > 0) {
             for (ActivityManager.RunningTaskInfo info : list) {
+                //TODO
                 ComponentName cpn = info.topActivity;
                 if (className.equals(cpn.getClassName())) {
                     return true;
