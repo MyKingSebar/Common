@@ -55,7 +55,7 @@ public class AliveJobService extends JobService {
             if (needTop) {
                 if (mContext == null || !SystemUtils.isAppOnForeground(mContext)) {
                     getApplicationContext().sendBroadcast(new Intent(AliveJobService.action));
-                    CommonLog.d(TAG, "APP现状：杀死，重启...");
+                    CommonLog.d(TAG, "APP现状：杀死，重启...top");
                 }
             } else {
                 CommonLog.d(TAG, "intent" + packageName + action + className + type);
@@ -64,13 +64,17 @@ public class AliveJobService extends JobService {
                         case CLASS:
                             if (!SystemUtils.isActivityExisted(getApplicationContext(), packageName, className)) {
                                 getApplicationContext().sendBroadcast(new Intent(AliveJobService.action));
-                                CommonLog.d(TAG, "APP现状：杀死，重启...");
+                                CommonLog.d(TAG, "APP现状：杀死，重启...class");
                             }
                             break;
                         case SERVICE:
-                            if (!SystemUtils.isServiceExisted(getApplicationContext(), className)) {
+                            CommonLog.d(TAG,"context:"+getApplicationContext()+",className"+className);
+                            if (!SystemUtils.isServiceRunning(getApplicationContext(), className)) {
+//                            if (!SystemUtils.isServiceExisted(getApplicationContext(), className)) {
                                 getApplicationContext().sendBroadcast(new Intent(AliveJobService.action));
-                                CommonLog.d(TAG, "APP现状：杀死，重启...");
+                                CommonLog.d(TAG, "APP现状：杀死，重启...service");
+                            }else {
+                                CommonLog.d(TAG, "APP现状：还活着...service");
                             }
                             break;
                         default:
@@ -96,7 +100,7 @@ public class AliveJobService extends JobService {
 
     //拉起保活
     public static void start(Context context, String packageName, String className, String action, boolean needTop, int type) {
-
+        CommonLog.d(TAG, "start:context:" + context + ",packageName:" + packageName + ",className:" + className + ",action" + action + ",needTop:" + needTop + ",type:" + type);
         if (!AliveJobService.isJobServiceAlive() || Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             mContext = context;
             Intent intent = new Intent(context, AliveJobService.class);

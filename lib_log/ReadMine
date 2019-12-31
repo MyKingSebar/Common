@@ -29,3 +29,6 @@ Application配置
 CommonLog.onDestory();
 
 注意：buildconfig.buildtype这个一直是release，所以想控制台输出日志需要传debug进来
+
+1.0.6添加分段打印 用法 eg：vs   es  is等
+这个思路是避免一次打印过多占用时间，这个不是特别确定是不是能起到作用或者增加性能占用，待考究
