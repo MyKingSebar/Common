@@ -1,7 +1,7 @@
 apply plugin: 'com.android.library'
 apply plugin: 'maven'
 
-def pomVersionName = '1.0.2-SNAPSHOT'
+def pomVersionName = '1.0.3-SNAPSHOT'
 def pomName = this.getName()
 def pomDescription = 'localtest'
 def versionString = '1.0'
