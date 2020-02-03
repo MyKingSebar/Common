@@ -1,4 +1,6 @@
 
+引入：implementation 'com.hanshow.android:lib_log:1.0.10-SNAPSHOT'
+
 使用
 Application配置
 
@@ -21,12 +23,14 @@ Application配置
         }else{
             sdcard = Environment.getExternalStorageDirectory().getAbsolutePath();
         }
-
+         //第二个参数为保存地址 第三个为前缀名称
         CommonLog.init(this,sdcard+ "/daemon/log",null,"daemon",true);
     }
 
 应用退出时调用：
 CommonLog.onDestory();
+
+log需要解压缩 方式 pyhton decode_mars_nocrypt_log_file.py 文件名 即可在源路径输出txt
 
 注意：buildconfig.buildtype这个一直是release，所以想控制台输出日志需要传debug进来
 

@@ -1,4 +1,9 @@
 
+引入：
+implementation 'com.hanshow.android:lib_permission:1.0.0-SNAPSHOT'
+implementation rootProject.depsLibs.appcompactx
+
+
 使用：
 
 因为用了rxjava所以oncreat里需要

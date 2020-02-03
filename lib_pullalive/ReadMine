@@ -1,5 +1,6 @@
 debug: Log检索AliveJobService
 使用
 引入相关 compileOnly rootProject.depsLibs.appcompact
+       implementation 'com.hanshow.android:lib_pullalive:1.0.3-SNAPSHOT'
 普通应用保活：AliveJobService.start(context)
 死了拉起保活：AliveJobService.start(context, context.getPackageName(), DaemonService.class.getName(), KeepAliveReceiver.LINE_SCREEN, false, AliveJobService.SERVICE);
