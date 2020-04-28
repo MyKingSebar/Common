@@ -35,6 +35,18 @@ public final class CommonLog {
         }
     }
 
+    public static void v(String tag, String message, Throwable tr) {
+        if (LEVEL <= VERBOSE) {
+            Log.v(tag, message + '\n' + android.util.Log.getStackTraceString(tr));
+        }
+    }
+
+    public static void v(String message, Throwable tr) {
+        if (LEVEL <= VERBOSE) {
+            Log.v(tag, message + '\n' + android.util.Log.getStackTraceString(tr));
+        }
+    }
+
     public static void d(String tag, String message) {
         if (LEVEL <= DEBUG) {
             Log.d(tag, message);
@@ -47,6 +59,19 @@ public final class CommonLog {
         }
     }
 
+    public static void d(String tag, String message, Throwable tr) {
+        if (LEVEL <= DEBUG) {
+            Log.d(tag, message + '\n' + android.util.Log.getStackTraceString(tr));
+        }
+    }
+
+    public static void d(String message, Throwable tr) {
+        if (LEVEL <= DEBUG) {
+            Log.d(tag, message + '\n' + android.util.Log.getStackTraceString(tr));
+        }
+    }
+
+
     public static void i(String tag, String message) {
         if (LEVEL <= INFO) {
             Log.i(tag, message);
@@ -56,6 +81,18 @@ public final class CommonLog {
     public static void i(String message) {
         if (LEVEL <= INFO) {
             Log.i(tag, message);
+        }
+    }
+
+    public static void i(String tag, String message, Throwable tr) {
+        if (LEVEL <= INFO) {
+            Log.i(tag, message + '\n' + android.util.Log.getStackTraceString(tr));
+        }
+    }
+
+    public static void i(String message, Throwable tr) {
+        if (LEVEL <= INFO) {
+            Log.i(tag, message + '\n' + android.util.Log.getStackTraceString(tr));
         }
     }
 
@@ -71,6 +108,17 @@ public final class CommonLog {
         }
     }
 
+    public static void w(String tag, String message, Throwable tr) {
+        if (LEVEL <= WARN) {
+            Log.w(tag, message + '\n' + android.util.Log.getStackTraceString(tr));
+        }
+    }
+
+    public static void w(String message, Throwable tr) {
+        if (LEVEL <= WARN) {
+            Log.w(tag, message + '\n' + android.util.Log.getStackTraceString(tr));
+        }
+    }
 
     public static void e(String tag, String message) {
         if (LEVEL <= ERROR) {
@@ -83,6 +131,19 @@ public final class CommonLog {
             Log.e(tag, message);
         }
     }
+
+    public static void e(String tag, String message, Throwable tr) {
+        if (LEVEL <= ERROR) {
+            Log.e(tag, message + '\n' + android.util.Log.getStackTraceString(tr));
+        }
+    }
+
+    public static void e(String message, Throwable tr) {
+        if (LEVEL <= ERROR) {
+            Log.e(tag, message + '\n' + android.util.Log.getStackTraceString(tr));
+        }
+    }
+
     public static void vs(String tag, String message) {
         if (LEVEL <= VERBOSE) {
             logSegmentation(tag, message, new LogListener() {
@@ -170,30 +231,32 @@ public final class CommonLog {
     }
 
     /**
-     *  切割日志 打印完整
+     * 切割日志 打印完整
+     *
      * @param msg
      */
-    private static void logSegmentation(String tag, String msg, LogListener listener){
-        if(listener==null){
+    private static void logSegmentation(String tag, String msg, LogListener listener) {
+        if (listener == null) {
             return;
         }
-        if(USESEGMENTATION<=0){
-            listener.log(tag,msg);
+        if (USESEGMENTATION <= 0) {
+            listener.log(tag, msg);
         }
 
         int length = msg.length();
         String log;
-        if (length <= USESEGMENTATION ) {
+        if (length <= USESEGMENTATION) {
             log = tag;
         } else {
-            log = msg.substring(0,USESEGMENTATION);
-            logSegmentation(tag,msg.substring(USESEGMENTATION),listener);
+            log = msg.substring(0, USESEGMENTATION);
+            logSegmentation(tag, msg.substring(USESEGMENTATION), listener);
         }
-        listener.log(tag,log);
+        listener.log(tag, log);
 
     }
-    interface LogListener{
-        void log(String tag,String message);
+
+    interface LogListener {
+        void log(String tag, String message);
     }
 
     public static void init(Context context, String filePath, String cachefilepath, String namePrefix) {

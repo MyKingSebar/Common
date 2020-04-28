@@ -1,14 +1,17 @@
 apply plugin: 'com.android.library'
 apply plugin: 'maven'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
 
-def pomVersionName = '1.0.12-SNAPSHOT'
+def pomVersionName = '1.0.0-SNAPSHOT'
 def pomName = this.getName()
-def pomDescription = 'the log library for all project'
+def pomDescription = 'the mqtt library for all project'
 def versionString = '1.0'
 def versionNumber = 1
 
 android {
     compileSdkVersion rootProject.android.compileSdkVersion
+
 
     defaultConfig {
         minSdkVersion rootProject.android.minSdkVersion
@@ -26,12 +29,21 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+    compileOptions {
+        sourceCompatibility = '1.8'
+        targetCompatibility = '1.8'
+    }
 
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation rootProject.depsLibs.mars_xlog
+
+    compileOnly rootProject.depsLibs.appcompactx
+    compileOnly rootProject.depsLibs.androidx_kt
+    compileOnly rootProject.depsLibs.ktjdk
+    implementation rootProject.depsLibs.mqttv3
+    implementation rootProject.depsLibs.mqservice
 }
 
 uploadArchives {

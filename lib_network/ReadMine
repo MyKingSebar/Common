@@ -1,0 +1,41 @@
+ 引入：implementation project(path: ':lib_network')
+相关：compileOnly rootProject.depsLibs.appcompactx
+    compileOnly rootProject.depsLibs.mqttv3
+compileOnly rootProject.depsLibs.mqservice
+
+使用：
+
+设置log（不设置使用系统log，检索” NetWork”）：
+MqttManager.getInstance. initLog (NetLogListener listener)
+
+初始化：
+MqttManager.getInstance. init(Context context, MqttConfig config)
+MqttManager.getInstance. init (Context context, MqttConfig config, NetLogListener listener)
+
+关闭MQTT客户端，建议在MainActivity的onDestroy中调用
+MqttManager.getInstance.close()
+
+连接服务器
+表示当前方法的回调，并不会作用到全局
+MqttManager.getInstance.connect(final MqttSubscriberJ listener)
+
+订阅一个话题
+MqttManager.getInstance. subscribe(final String topic, final MqttSubscriberJ listener)
+
+退订某一个topic
+MqttManager.getInstance.unsubscribe(final String topic)
+
+发布消息
+MqttManager.getInstance. publishMessage(final String topic, final String content)
+
+主动断开连接，不会自动重连
+MqttManager.getInstance. disconnect()
+
+判断连接是否断开
+MqttManager.getInstance. isConnected()
+
+获取主机url
+MqttManager.getInstance. getServerUrl()
+
+获取订阅
+MqttManager.getInstance. getSubscribers（）

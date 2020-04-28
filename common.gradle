@@ -3,6 +3,10 @@ ext {
                    design          : '28.0.0',
                    recyclerview    : '28.0.0',
                    cardview        : '28.0.0',
+
+                   androidx_kt:'+',
+                   ktjdk:'',
+
                    constraint      : '1.1.3',
                    eventbus        : '3.1.1',
                    greendao        : '3.2.2',
@@ -30,10 +34,10 @@ ext {
                    logger          : '2.2.0',]
     android = [compileSdkVersion: 29,
                buildToolsVersion: "29.0.0",
-               minSdkVersion    : 19,
+               minSdkVersion    : 21,
                targetSdkVersion : 29,
-               versionCode      : 1,
-               versionName      : "1.0",
+               versionCode      : 3,
+               versionName      : "1.0.3",
                multiDexEnabled  : true,]
     depsLibs = [appcompactx     : 'androidx.appcompat:appcompat:1.0.0',
                 designx         : 'com.google.android.material:material:1.0.0',
@@ -68,5 +72,9 @@ ext {
                 retrofit_gson   : "com.squareup.retrofit2:converter-gson:${depsVersion.retrofit_gson}",
                 retrofit_scalars: "com.squareup.retrofit2:converter-scalars:${depsVersion.retrofit_scalars}",
                 mqttv3          : "org.eclipse.paho:org.eclipse.paho.client.mqttv3:${depsVersion.mqttv3}",
-                mqservice       : "org.eclipse.paho:org.eclipse.paho.android.service:${depsVersion.mqservice}",]
+                mqservice       : "org.eclipse.paho:org.eclipse.paho.android.service:${depsVersion.mqservice}",
+                androidx_kt:"androidx.core:core-ktx:${depsVersion.androidx_kt}",
+                ktjdk:"org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+
+    ]
 }
