@@ -7,3 +7,4 @@ include ':app',
         ':lib_permission',
         ':lib_network',
         ':framework'
+include ':lib_timer'

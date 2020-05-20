@@ -1,0 +1,62 @@
+apply plugin: 'com.android.library'
+apply plugin: 'maven'
+
+def pomVersionName = '1.0.0-SNAPSHOT'
+def pomName = this.getName()
+def pomDescription = 'the timer library for all project'
+def versionString = '1.0'
+def versionNumber = 1
+
+
+android {
+    compileSdkVersion rootProject.android.compileSdkVersion
+
+    defaultConfig {
+        minSdkVersion rootProject.android.minSdkVersion
+        targetSdkVersion rootProject.android.targetSdkVersion
+        versionCode rootProject.android.versionCode
+        versionName rootProject.android.versionName
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles 'consumer-rules.pro'
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    compileOnly rootProject.depsLibs.appcompact
+    testImplementation 'junit:junit:4.13'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    compileOnly rootProject.depsLibs.rxjava
+    compileOnly rootProject.depsLibs.rxandroid
+    compileOnly 'com.hanshow.android:lib_log:1.0.12-SNAPSHOT'
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            repository(url: NEXUS_REPOSITORY_URL) {
+                authentication(userName: NEXUS_USERNAME,
+                        password: NEXUS_PASSWORD)
+            }
+            pom.project {
+                name pomName
+                version pomVersionName
+                description pomDescription
+                artifactId pomName
+                groupId POM_GROUPID
+                packaging POM_PACKAGING
+            }
+        }
+    }
+}
