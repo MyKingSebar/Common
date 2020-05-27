@@ -1,11 +1,11 @@
 apply plugin: 'com.android.library'
 apply plugin: 'maven'
 
-def pomVersionName = '1.0.1-SNAPSHOT'
+def pomVersionName = '1.0.3-SNAPSHOT'
 def pomName = this.getName()
 def pomDescription = 'the imageloader library for all project'
-def versionString = '1.0'
-def versionNumber = 1
+def versionString = '1.0.3'
+def versionNumber = 3
 
 android {
     compileSdkVersion rootProject.android.compileSdkVersion

@@ -25,6 +25,7 @@ import com.bumptech.glide.request.target.Target;
 import com.bumptech.glide.request.transition.Transition;
 import com.common.lib_imageloader.R;
 import com.common.lib_imageloader.image.CustomRequestListener;
+import com.common.lib_imageloader.image.Resource;
 import com.common.lib_imageloader.image.Utils;
 
 import io.reactivex.Observable;
@@ -80,6 +81,16 @@ public class ImageLoaderManager {
                 .into(imageView);
     }
 
+    public void displayImageForView(ImageView imageView, String url, Resource resource,
+                                    CustomRequestListener requestListener) {
+        Glide.with(imageView.getContext())
+                .asBitmap()
+                .load(url)
+                .apply(initCommonRequestOption(resource))
+                .transition(withCrossFade())
+                .into(imageView);
+    }
+
     /**
      * 带回调的加载图片方法
      */
@@ -99,11 +110,59 @@ public class ImageLoaderManager {
                 });
     }
 
+    public void displayImageForCircle(final ImageView imageView, String url, Resource resource) {
+        Glide.with(imageView.getContext())
+                .asBitmap()
+                .load(url)
+                .apply(initCommonRequestOption(resource))
+                .into(new BitmapImageViewTarget(imageView) {
+                    @Override
+                    protected void setResource(final Bitmap resource) {
+                        RoundedBitmapDrawable circularBitmapDrawable =
+                                RoundedBitmapDrawableFactory.create(imageView.getResources(), resource);
+                        circularBitmapDrawable.setCircular(true);
+                        imageView.setImageDrawable(circularBitmapDrawable);
+                    }
+                });
+    }
+
     public void displayImageForViewGroup(final ViewGroup group, String url) {
         Glide.with(group.getContext())
                 .asBitmap()
                 .load(url)
                 .apply(initCommonRequestOption())
+                .into(new SimpleTarget<Bitmap>() {//设置宽高
+                    @Override
+                    public void onResourceReady(@NonNull Bitmap resource,
+                                                @Nullable Transition<? super Bitmap> transition) {
+                        final Bitmap res = resource;
+                        Observable.just(resource)
+                                .map(new Function<Bitmap, Drawable>() {
+                                    @Override
+                                    public Drawable apply(Bitmap bitmap) {
+                                        Drawable drawable = new BitmapDrawable(
+                                                Utils.doBlur(res, 100, true)
+                                        );
+                                        return drawable;
+                                    }
+                                })
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(new Consumer<Drawable>() {
+                                    @Override
+                                    public void accept(Drawable drawable) throws Exception {
+                                        group.setBackground(drawable);
+                                    }
+                                });
+                    }
+                });
+    }
+
+    public void displayImageForViewGroup(final ViewGroup group, String url, Resource resource) {
+        Glide.with(group.getContext())
+                .asBitmap()
+                .load(url)
+                .apply(initCommonRequestOption(resource))
                 .into(new SimpleTarget<Bitmap>() {//设置宽高
                     @Override
                     public void onResourceReady(@NonNull Bitmap resource,
@@ -153,6 +212,18 @@ public class ImageLoaderManager {
                 .into(target);
     }
 
+    private void displayImageForTarget(Context context, Target target, String url, Resource resource,
+                                       CustomRequestListener requestListener) {
+        Glide.with(context)
+                .asBitmap()
+                .load(url)
+                .apply(initCommonRequestOption(resource))
+                .transition(withCrossFade())
+                .fitCenter()
+                .listener(requestListener)
+                .into(target);
+    }
+
     /*
      * 初始化Notification Target
      */
@@ -167,6 +238,23 @@ public class ImageLoaderManager {
         RequestOptions options = new RequestOptions();
         options.placeholder(R.mipmap.b4y)
                 .error(R.mipmap.b4y)
+                .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+                .skipMemoryCache(false)
+                .priority(Priority.NORMAL);
+        return options;
+    }
+
+    private RequestOptions initCommonRequestOption(Resource resource) {
+        if (resource == null || resource.getError() == 0 || resource.getPlaceholder() == 0) {
+            RequestOptions options = new RequestOptions();
+            options.diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+                    .skipMemoryCache(false)
+                    .priority(Priority.NORMAL);
+            return options;
+        }
+        RequestOptions options = new RequestOptions();
+        options.placeholder(resource.getPlaceholder())
+                .error(resource.getError())
                 .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
                 .skipMemoryCache(false)
                 .priority(Priority.NORMAL);
