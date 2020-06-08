@@ -6,6 +6,7 @@ public interface NetLogListener {
     void i(String msg);
     void w(String msg);
     void e(String msg);
+    void e(String msg, Exception e);
     //多段
     void vs(String msg);
     void ds(String msg);
