@@ -46,11 +46,11 @@ public class NetLog {
         }
     }
 
-    public static void e(String msg,Exception e) {
+    public static void e(String msg, Exception e) {
         if (MqttManager.getInstance().getLogListener() != null) {
-            MqttManager.getInstance().getLogListener().e(msg,e);
+            MqttManager.getInstance().getLogListener().e(msg, e);
         } else {
-            Log.e("NetWork", msg,e);
+            Log.e("NetWork", msg, e);
         }
     }
 

@@ -25,6 +25,7 @@ public class MqttSubscriberJ implements IMqttSubscriberJ {
     public void setConnectFailedListener(ConnectionFailedListener connectFailedListener) {
         this.connectFailedListener = connectFailedListener;
     }
+
     public ConnectionLostListener getConnectionLostListener() {
         return connectionLostListener;
     }
@@ -77,7 +78,7 @@ public class MqttSubscriberJ implements IMqttSubscriberJ {
     public void onMessageArrived(String topic, String message, int qos) {
         if (messageArrivedListener != null) {
             messageArrivedListener.onMessageArrived(topic, message, qos);
-        }else {
+        } else {
             NetLog.e("messageArrivedListener==null");
         }
     }
@@ -86,7 +87,7 @@ public class MqttSubscriberJ implements IMqttSubscriberJ {
     public void onDeliveryComplete(String message) {
         if (deliveryCompleteListener != null) {
             deliveryCompleteListener.onDeliveryComplete(message);
-        }else {
+        } else {
             NetLog.e("deliveryCompleteListener==null");
         }
     }
@@ -95,7 +96,7 @@ public class MqttSubscriberJ implements IMqttSubscriberJ {
     public void onConnectSuccess() {
         if (connectSuccessListener != null) {
             connectSuccessListener.onConnectSuccess();
-        }else {
+        } else {
             NetLog.e("connectSuccessListener==null");
         }
     }
@@ -104,16 +105,16 @@ public class MqttSubscriberJ implements IMqttSubscriberJ {
     public void onConnectionLost(Throwable throwable) {
         if (connectionLostListener != null) {
             connectionLostListener.onConnectionLost(throwable);
-        }else {
+        } else {
             NetLog.e("connectionLostListener==null");
         }
     }
 
     @Override
     public void onConnectFailed(Throwable throwable) {
-        if(connectFailedListener !=null){
+        if (connectFailedListener != null) {
             connectFailedListener.onConnectionFailed(throwable);
-        }else {
+        } else {
             NetLog.e("connectFailedListener==null");
         }
     }
@@ -122,7 +123,7 @@ public class MqttSubscriberJ implements IMqttSubscriberJ {
     public void onSubscriberSuccess() {
         if (subscriberSuccessListener != null) {
             subscriberSuccessListener.onSubscriberSuccess();
-        }else {
+        } else {
             NetLog.e("subscriberSuccessListener==null");
         }
     }
@@ -131,7 +132,7 @@ public class MqttSubscriberJ implements IMqttSubscriberJ {
     public void onSubscriberFailed(Throwable throwable) {
         if (subscriberFailedListener != null) {
             subscriberFailedListener.onSubscriberFailed(throwable);
-        }else {
+        } else {
             NetLog.e("subscriberFailedListener==null");
         }
     }

@@ -19,13 +19,13 @@ public class MqttUtil {
     public static class MqttConnectOptionsBuilder {
         /* 用于设置客户端会话的ID。在setCleanSession(false);被调用时，MQTT服务器利用该ID获得相应的会话。此ID应少于23个字符，默认根据本机地址、端口和时间自动生成
        mqtt.setCleanSession(false); //若设为false，MQTT服务器将持久化客户端会话的主体订阅和ACK位置，默认为true*/
-        private boolean cleanSession=true;
+        private boolean cleanSession = true;
         private int connectionTimeout;
         private int keepAliveInterval;
         private String userName;
         private char[] password;
         private String[] serverURIs;
-        private boolean automaticReconnect=false;
+        private boolean automaticReconnect = false;
         private MqttConnectOptions mqttConnectOptions;
 
         public MqttConnectOptionsBuilder() {
@@ -65,22 +65,23 @@ public class MqttUtil {
             this.automaticReconnect = automaticReconnect;
             return this;
         }
-        public MqttConnectOptions build(){
-            mqttConnectOptions=new MqttConnectOptions();
+
+        public MqttConnectOptions build() {
+            mqttConnectOptions = new MqttConnectOptions();
             mqttConnectOptions.setCleanSession(cleanSession);
-            if(connectionTimeout!=0){
+            if (connectionTimeout != 0) {
                 mqttConnectOptions.setConnectionTimeout(connectionTimeout);
             }
-            if(keepAliveInterval!=0){
+            if (keepAliveInterval != 0) {
                 mqttConnectOptions.setConnectionTimeout(keepAliveInterval);
             }
-            if(!TextUtils.isEmpty(userName)){
+            if (!TextUtils.isEmpty(userName)) {
                 mqttConnectOptions.setUserName(userName);
             }
-            if(password.length!=0){
+            if (password.length != 0) {
                 mqttConnectOptions.setPassword(password);
             }
-            if(serverURIs.length!=0){
+            if (serverURIs.length != 0) {
                 mqttConnectOptions.setServerURIs(serverURIs);
             }
             mqttConnectOptions.setAutomaticReconnect(automaticReconnect);

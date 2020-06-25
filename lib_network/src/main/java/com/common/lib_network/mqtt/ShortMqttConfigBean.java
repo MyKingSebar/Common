@@ -7,8 +7,8 @@ public class ShortMqttConfigBean implements Serializable {
     public ShortMqttConfigBean() {
     }
 
-    public int delayOpenTime=1*60*1000;
-    public int delayCloseTime=1*60*1000;
-    public boolean useSHort=false;
-    public int canTryConnectTimes=5;
+    public int delayOpenTime = 1 * 60 * 1000;
+    public int delayCloseTime = 1 * 60 * 1000;
+    public boolean useSHort = false;
+    public int canTryConnectTimes = 5;
 }

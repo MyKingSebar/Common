@@ -7,16 +7,18 @@ class MqttConfig {
     private var userName = "admin"
     private var password = "admin"
     private var clientId = "MqttAndroidClient"
-    private var mUpTopic=""
-    private var mTopic : Array<String> = arrayOf()
-    private var mQos= intArrayOf(MqttManager.QOS_ONLYONE,MqttManager.QOS_ONLYONE,MqttManager.QOS_ONLYONE)
-    private var timeout= 30
+    private var mUpTopic = ""
+    private var mTopic: Array<String> = arrayOf()
+    private var mQos = intArrayOf(MqttManager.QOS_ONLYONE, MqttManager.QOS_ONLYONE, MqttManager.QOS_ONLYONE)
+    private var timeout = 30
     private var heartbeat = 30
-    private var will:ByteArray ?=null
+    private var will: ByteArray? = null
+
     // 清除缓存 保持长久连接
-    private var cleanSession=true
+    private var cleanSession = true
+
     //自动重连
-    private var automaticReconnect=false
+    private var automaticReconnect = false
 
 
     fun create(): MqttConfig {
@@ -42,10 +44,12 @@ class MqttConfig {
         this.clientId = clientId
         return this
     }
+
     fun setUpTopic(mUpTopic: String): MqttConfig {
         this.mUpTopic = mUpTopic
         return this
     }
+
     fun setTopic(mTopic: Array<String>): MqttConfig {
         this.mTopic = mTopic
         return this
@@ -66,54 +70,69 @@ class MqttConfig {
     fun getClientId(): String {
         return clientId
     }
+
     fun getUpTopic(): String {
         return mUpTopic
     }
+
     fun getTopic(): Array<String> {
         return mTopic
     }
+
     fun setQos(mQos: IntArray): MqttConfig {
         this.mQos = mQos
         return this
     }
-    fun getQos(): IntArray{
+
+    fun getQos(): IntArray {
         return mQos
     }
+
     fun setTimeout(timeout: Int): MqttConfig {
         this.timeout = timeout
         return this
     }
-    fun getTimeout(): Int{
+
+    fun getTimeout(): Int {
         return timeout
     }
+
     fun setHeartbeat(heartbeat: Int): MqttConfig {
         this.heartbeat = heartbeat
         return this
     }
-    fun getHeartbeat(): Int{
+
+    fun getHeartbeat(): Int {
         return heartbeat
     }
+
     fun setWill(will: ByteArray): MqttConfig {
         this.will = will
         return this
     }
+
     fun getWill(): ByteArray? {
         return will
     }
+
     fun setCleanSession(cleanSession: Boolean): MqttConfig {
         this.cleanSession = cleanSession
         return this
     }
-    fun getCleanSession(): Boolean{
+
+    fun getCleanSession(): Boolean {
         return cleanSession
     }
+
     fun setAutomaticReconnect(automaticReconnect: Boolean): MqttConfig {
         this.automaticReconnect = automaticReconnect
         return this
     }
-    fun getAutomaticReconnect(): Boolean{
+
+    fun getAutomaticReconnect(): Boolean {
         return automaticReconnect
     }
+
     fun setDebug(isDebug: Boolean) {
 //        MqttLoger.setDebug(isDebug)
     }
