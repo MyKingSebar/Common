@@ -1,6 +1,11 @@
 package com.common.lib_network.mqtt;
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.Message;
+import android.text.TextUtils;
+
+import androidx.annotation.NonNull;
 
 import com.common.lib_network.NetCommon;
 import com.common.lib_network.NetLog;
@@ -18,7 +23,9 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * 消息队列管理器。
@@ -56,6 +63,61 @@ public class MqttManager {
     protected static final String URI_TYPE_WS = "ws";
     protected static final String URI_TYPE_WSS = "wss";
 
+    /**
+     * 短连接参数
+     */
+    private boolean useShortMqtt = false;
+    private MqttSubscriberJ mMqttSubscriberJ = null;
+    private CopyOnWriteArrayList<String> messageList = new CopyOnWriteArrayList<>();
+    private final String ADDSTRING = "ADDSTRING";
+    private final int CLOSE = 1;
+    private final int OPEN = 2;
+    private long delayCloseMqttTime = 2 * 60 * 1000;
+    private long delayOpenMqttTime = 2 * 60 * 1000;
+    private ShortMqttHandler shortMqttHandler = new ShortMqttHandler();
+    private ShortMqttConfigBean shortMqttConfigBean = null;
+    private int canTryConnectTimes = 5;
+    private int tryConnectLeftTimes = 5;
+
+    /**
+     * 查询还剩重连次数
+     *
+     * @return
+     */
+    public int getTryConnectLeftTimes() {
+        return tryConnectLeftTimes;
+    }
+
+    /**
+     * 恢复重连次数
+     */
+    public void resetTryConnectLeftTimes() {
+        tryConnectLeftTimes = canTryConnectTimes;
+    }
+
+
+    public ShortMqttConfigBean getShortMqttConfigBean() {
+        return shortMqttConfigBean;
+    }
+
+    public void setShortMqttConfigBean(ShortMqttConfigBean shortMqttConfigBean) {
+        if (shortMqttConfigBean != null) {
+
+            if (shortMqttConfigBean.delayCloseTime > 0) {
+                delayCloseMqttTime = shortMqttConfigBean.delayCloseTime;
+            }
+            if (shortMqttConfigBean.delayOpenTime > 0) {
+                delayOpenMqttTime = shortMqttConfigBean.delayOpenTime;
+            }
+            if (shortMqttConfigBean.canTryConnectTimes > 0) {
+                this.canTryConnectTimes = shortMqttConfigBean.canTryConnectTimes;
+            }
+            this.useShortMqtt = shortMqttConfigBean.useSHort;
+            this.shortMqttConfigBean = shortMqttConfigBean;
+        }
+
+    }
+
     public NetLogListener getLogListener() {
         return logListener;
     }
@@ -70,6 +132,11 @@ public class MqttManager {
     }
 
     public void init(Context context, MqttConfig config, NetLogListener listener) {
+        init(context, config, listener, false);
+    }
+
+    public void init(Context context, MqttConfig config, NetLogListener listener, boolean useShortMqtt) {
+        this.useShortMqtt = useShortMqtt;
         logListener = listener;
         mqttConfig = config;
         mqttClient = new MqttAndroidClient(context, config.getBaseUrl().split(",")[0], config.getClientId());
@@ -167,9 +234,11 @@ public class MqttManager {
             mainListener = listener;
         }
         try {
+            tryConnectLeftTimes--;
             mqttClient.connect(generateConnectOptions(), null, new IMqttActionListener() {
                 @Override
                 public void onSuccess(IMqttToken asyncActionToken) {
+                    resetTryConnectLeftTimes();
                     if (listener != null) {
                         listener.onConnectSuccess();
                     } else {
@@ -190,6 +259,9 @@ public class MqttManager {
                     disconnectedBufferOptions.setDeleteOldestMessages(false);
                     if (mqttClient != null) {
                         mqttClient.setBufferOpts(disconnectedBufferOptions);
+                    }
+                    if (useShortMqtt) {
+                        shortMqttPerformPublishMessage();
                     }
 
                 }
@@ -339,12 +411,23 @@ public class MqttManager {
      * 发布消息
      */
     public void publishMessage(final String topic, final String content) {
+        if (TextUtils.isEmpty(topic)) {
+            NetLog.e("----> mqtt publish message failed, topic is null");
+            return;
+        }
+        if (useShortMqtt) {
+            messageList.add(topic + ADDSTRING + content);
+        }
         if (mqttClient == null) {
             NetLog.e("----> mqtt publish message failed, please init mqtt first.");
             return;
         }
         if (isConnected()) {
-            performPublishMessage(topic, content);
+            if (useShortMqtt) {
+                shortMqttPerformPublishMessage();
+            } else {
+                performPublishMessage(topic, content);
+            }
         } else {
             if (mainListener != null) {
                 mainListener.getConnectFailedListener().onConnectionFailed(null);
@@ -484,4 +567,152 @@ public class MqttManager {
     private static class MqttManagerHolder {
         private static MqttManager INSTANCE = new MqttManager();
     }
+
+
+    private final class ShortMqttHandler extends Handler {
+
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+            switch (msg.what) {
+                case CLOSE:
+                    disconnect();
+                    shortMqttHandler.sendEmptyMessageDelayed(OPEN, delayOpenMqttTime);
+                    break;
+                case OPEN:
+                    reConnect();
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    private void shortMqttPerformPublishMessage() {
+        try {
+
+
+            if (mqttClient != null) {
+                for (String s : messageList) {
+                    String[] value = s.split(ADDSTRING);
+                    if (value.length == 2) {
+                        mqttClient.publish(value[1], value[1].getBytes(), QOS_ONLYONE, false);
+                        messageList.remove(s);
+                    }
+                }
+//                Iterator<String> it = messageList.iterator();
+//
+//                while (it.hasNext()) {
+//                    String str = it.next();
+//                    String[] value=str.split(ADDSTRING);
+//                    if(value.length==2){
+//                        mqttClient.publish(value[1], value[1].getBytes(), QOS_ONLYONE, false);
+//                        it.remove();
+//                    }
+//                }
+
+            }
+            reflushClose();
+        } catch (MqttException e) {
+            e.printStackTrace();
+            NetLog.e(e.getMessage());
+        }
+    }
+
+    private void reflushClose() {
+        if (useShortMqtt) {
+            shortMqttHandler.removeMessages(CLOSE);
+            shortMqttHandler.removeMessages(OPEN);
+            shortMqttHandler.sendEmptyMessageDelayed(CLOSE, delayCloseMqttTime);
+        }
+    }
+
+    /**
+     * 重连几次失败之后调用
+     */
+    //TODO
+    public void reflushOpen() {
+        if (useShortMqtt) {
+            shortMqttHandler.removeMessages(CLOSE);
+            shortMqttHandler.removeMessages(OPEN);
+            shortMqttHandler.sendEmptyMessageDelayed(OPEN, delayOpenMqttTime);
+        }
+    }
+
+    /**
+     * M
+     * 改短连接重连连接服务器
+     * 表示当前方法的回调，并不会作用到全局
+     */
+    public void reConnect() {
+        if (mqttClient == null) {
+            NetLog.e("----> mqtt publish message failed, please init mqtt first.");
+            return;
+        }
+        if (useShortMqtt) {
+            shortMqttHandler.removeMessages(OPEN);
+        }
+        try {
+            tryConnectLeftTimes--;
+            mqttClient.connect(generateConnectOptions(), null, new IMqttActionListener() {
+                @Override
+                public void onSuccess(IMqttToken asyncActionToken) {
+                    resetTryConnectLeftTimes();
+                    reflushClose();
+                    if (mMqttSubscriberJ != null) {
+                        mMqttSubscriberJ.onConnectSuccess();
+                    } else {
+                        NetLog.e("----> connect success but MqttSubscriberJ is null");
+                    }
+                    NetLog.d("----> mSubscribers:" + mSubscribers.size());
+                    for (Map.Entry<String, MqttSubscriberJ> entry : mSubscribers.entrySet()) {
+                        if (entry.getValue() != null) {
+                            entry.getValue().onConnectSuccess();
+                            NetLog.d("----> mSubscribers:entrySet " + entry.getValue().toString());
+                        } else {
+                            NetLog.d("----> reConnect entry.getValue()!=null");
+                        }
+                    }
+                    NetLog.d("----> mqtt connect success.");
+                    DisconnectedBufferOptions disconnectedBufferOptions = new DisconnectedBufferOptions();
+                    disconnectedBufferOptions.setBufferEnabled(true);
+                    disconnectedBufferOptions.setBufferSize(100);
+                    disconnectedBufferOptions.setPersistBuffer(false);
+                    disconnectedBufferOptions.setDeleteOldestMessages(false);
+                    if (mqttClient != null) {
+                        mqttClient.setBufferOpts(disconnectedBufferOptions);
+                    }
+                    if (useShortMqtt) {
+                        shortMqttPerformPublishMessage();
+                    }
+                }
+
+                @Override
+                public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
+                    if (mMqttSubscriberJ != null) {
+                        mMqttSubscriberJ.onConnectFailed(exception);
+                    } else {
+                        NetLog.e("----> connect onFailure but MqttSubscriberJ is null");
+                    }
+                    for (Map.Entry<String, MqttSubscriberJ> entry : mSubscribers.entrySet()) {
+                        if (entry.getValue() != null) {
+                            if (entry.getValue() != null) {
+                                entry.getValue().onConnectFailed(exception);
+                            } else {
+                                NetLog.d("----> onConnectFailed onFailure entry.getValue()!=null");
+                            }
+
+                        }
+                    }
+                    NetLog.e("----> mqtt connect failed, exception = " + exception.getMessage());
+                }
+            });
+
+        } catch (MqttException e) {
+            e.printStackTrace();
+            NetLog.e(e.getMessage());
+        }
+
+    }
+
+
 }

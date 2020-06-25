@@ -39,3 +39,7 @@ MqttManager.getInstance. getServerUrl()
 
 获取订阅
 MqttManager.getInstance. getSubscribers（）
+
+
+mqtt短链接
+setShortMqttConfigBean()
