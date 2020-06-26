@@ -220,6 +220,12 @@ public class MqttManager {
         }
     }
 
+    private void tryConnectTime() {
+        if (useShortMqtt) {
+            tryConnectLeftTimes--;
+        }
+    }
+
     /**
      * M
      * 连接服务器
@@ -234,7 +240,7 @@ public class MqttManager {
             mainListener = listener;
         }
         try {
-            tryConnectLeftTimes--;
+            tryConnectTime();
             mqttClient.connect(generateConnectOptions(), null, new IMqttActionListener() {
                 @Override
                 public void onSuccess(IMqttToken asyncActionToken) {
@@ -575,10 +581,12 @@ public class MqttManager {
         public void handleMessage(@NonNull Message msg) {
             switch (msg.what) {
                 case CLOSE:
+                    NetLog.d("CLOSE");
                     disconnect();
                     shortMqttHandler.sendEmptyMessageDelayed(OPEN, delayOpenMqttTime);
                     break;
                 case OPEN:
+                    NetLog.d("OPEN");
                     reConnect();
                     break;
                 default:
@@ -629,12 +637,12 @@ public class MqttManager {
     /**
      * 重连几次失败之后调用
      */
-    //TODO
     public void reflushOpen() {
         if (useShortMqtt) {
             shortMqttHandler.removeMessages(CLOSE);
             shortMqttHandler.removeMessages(OPEN);
             shortMqttHandler.sendEmptyMessageDelayed(OPEN, delayOpenMqttTime);
+            resetTryConnectLeftTimes();
         }
     }
 
@@ -652,16 +660,16 @@ public class MqttManager {
             shortMqttHandler.removeMessages(OPEN);
         }
         try {
-            tryConnectLeftTimes--;
+            tryConnectTime();
             mqttClient.connect(generateConnectOptions(), null, new IMqttActionListener() {
                 @Override
                 public void onSuccess(IMqttToken asyncActionToken) {
                     resetTryConnectLeftTimes();
                     reflushClose();
-                    if (mMqttSubscriberJ != null) {
-                        mMqttSubscriberJ.onConnectSuccess();
+                    if (mainListener != null) {
+                        mainListener.onConnectSuccess();
                     } else {
-                        NetLog.e("----> connect success but MqttSubscriberJ is null");
+                        NetLog.e("----> connect success but mainListener is null");
                     }
                     NetLog.d("----> mSubscribers:" + mSubscribers.size());
                     for (Map.Entry<String, MqttSubscriberJ> entry : mSubscribers.entrySet()) {
@@ -688,10 +696,10 @@ public class MqttManager {
 
                 @Override
                 public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-                    if (mMqttSubscriberJ != null) {
-                        mMqttSubscriberJ.onConnectFailed(exception);
+                    if (mainListener != null) {
+                        mainListener.onConnectFailed(exception);
                     } else {
-                        NetLog.e("----> connect onFailure but MqttSubscriberJ is null");
+                        NetLog.e("----> connect onFailure but mainListener is null");
                     }
                     for (Map.Entry<String, MqttSubscriberJ> entry : mSubscribers.entrySet()) {
                         if (entry.getValue() != null) {
