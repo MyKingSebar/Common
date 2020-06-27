@@ -167,11 +167,11 @@ public class MqttManager {
 
             @Override
             public void messageArrived(String topic, MqttMessage message) {
-//                NetLog.d("MQTT收到消息的topic=" + topic);
+                NetLog.d("MQTT收到消息的topic=" + topic);
                 String msg = new String(message.getPayload());
                 MqttSubscriberJ subscriberJ = mSubscribers.get(topic);
                 if (subscriberJ != null) {
-//                    NetLog.v("MQTT收到消息" + msg);
+                    NetLog.v("MQTT收到消息" + msg);
                     subscriberJ.getMessageArrivedListener().onMessageArrived(topic, msg, message.getQos());
                 }
             }
@@ -416,23 +416,23 @@ public class MqttManager {
     /**
      * 发布消息
      */
-    public void publishMessage(final String topic, final String content) {
+    public String publishMessage(final String topic, final String content) {
         if (TextUtils.isEmpty(topic)) {
             NetLog.e("----> mqtt publish message failed, topic is null");
-            return;
+            return null;
         }
         if (useShortMqtt) {
             messageList.add(topic + ADDSTRING + content);
         }
         if (mqttClient == null) {
             NetLog.e("----> mqtt publish message failed, please init mqtt first.");
-            return;
+            return null;
         }
         if (isConnected()) {
             if (useShortMqtt) {
                 shortMqttPerformPublishMessage();
             } else {
-                performPublishMessage(topic, content);
+                return performPublishMessage(topic, content);
             }
         } else {
             if (mainListener != null) {
@@ -455,19 +455,24 @@ public class MqttManager {
 //            connect(mqttSubscriberJ);
             NetLog.e("TEST3");
         }
+        return null;
     }
 
-    private void performPublishMessage(String topic, String content) {
+    private String performPublishMessage(String topic, String content) {
         try {
 //            MqttMessage message = new MqttMessage();
 //            message.setPayload(content.getBytes());
             if (mqttClient != null) {
-                mqttClient.publish(topic, content.getBytes(), QOS_ONLYONE, false);
+                IMqttDeliveryToken token= mqttClient.publish(topic, content.getBytes(), QOS_ONLYONE, false);
+                if(token!=null&&token.getMessage()!=null){
+                    return token.getMessage().toString();
+                }
             }
         } catch (MqttException e) {
             e.printStackTrace();
             NetLog.e("performPublishMessage()" + (e.getMessage() == null ? "null" : e.getMessage()));
         }
+        return null;
     }
 
     /**
@@ -603,8 +608,10 @@ public class MqttManager {
                 for (String s : messageList) {
                     String[] value = s.split(ADDSTRING);
                     if (value.length == 2) {
-                        mqttClient.publish(value[1], value[1].getBytes(), QOS_ONLYONE, false);
-                        messageList.remove(s);
+                        if(isConnected()){
+                            mqttClient.publish(value[0], value[1].getBytes(), QOS_ONLYONE, false);
+                            messageList.remove(s);
+                        }
                     }
                 }
 //                Iterator<String> it = messageList.iterator();
@@ -626,7 +633,7 @@ public class MqttManager {
         }
     }
 
-    private void reflushClose() {
+    public void reflushClose() {
         if (useShortMqtt) {
             shortMqttHandler.removeMessages(CLOSE);
             shortMqttHandler.removeMessages(OPEN);
