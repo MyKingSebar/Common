@@ -10,6 +10,8 @@ import androidx.annotation.NonNull;
 import com.common.lib_network.NetCommon;
 import com.common.lib_network.NetLog;
 import com.common.lib_network.NetLogListener;
+import com.common.lib_network.mqtt.proxy.ProxyBean;
+import com.common.lib_network.mqtt.proxy.ProxySocketFactory;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
 import org.eclipse.paho.client.mqttv3.DisconnectedBufferOptions;
@@ -21,6 +23,7 @@ import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
+import java.net.Proxy;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Map;
@@ -80,6 +83,14 @@ public class MqttManager {
     private int tryConnectLeftTimes = 5;
 
     /**
+     * 代理
+     */
+    private boolean usePeoxy = false;
+    private ProxyBean proxyBean = null;
+
+    private boolean sslNoVerify = true;
+
+    /**
      * 查询还剩重连次数
      *
      * @return
@@ -136,7 +147,14 @@ public class MqttManager {
     }
 
     public void init(Context context, MqttConfig config, NetLogListener listener, boolean useShortMqtt) {
+        init(context, config, listener, useShortMqtt, null, true);
+    }
+
+    public void init(Context context, MqttConfig config, NetLogListener listener, boolean useShortMqtt, ProxyBean proxyBean, boolean sslNoVerify) {
         this.useShortMqtt = useShortMqtt;
+        this.sslNoVerify = sslNoVerify;
+        this.usePeoxy = checkProxyBean(proxyBean);
+        this.proxyBean = proxyBean;
         logListener = listener;
         mqttConfig = config;
         mqttClient = new MqttAndroidClient(context, config.getBaseUrl().split(",")[0], config.getClientId());
@@ -200,6 +218,13 @@ public class MqttManager {
                 }
             }
         });
+    }
+
+    private boolean checkProxyBean(ProxyBean bean) {
+        if (bean != null && !TextUtils.isEmpty(bean.getProxyHost())) {
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -463,8 +488,8 @@ public class MqttManager {
 //            MqttMessage message = new MqttMessage();
 //            message.setPayload(content.getBytes());
             if (mqttClient != null) {
-                IMqttDeliveryToken token= mqttClient.publish(topic, content.getBytes(), QOS_ONLYONE, false);
-                if(token!=null&&token.getMessage()!=null){
+                IMqttDeliveryToken token = mqttClient.publish(topic, content.getBytes(), QOS_ONLYONE, false);
+                if (token != null && token.getMessage() != null) {
                     return token.getMessage().toString();
                 }
             }
@@ -547,16 +572,35 @@ public class MqttManager {
         mConOpt.setPassword(mqttConfig.getPassword().toCharArray());
         // 自动重连
         mConOpt.setAutomaticReconnect(mqttConfig.getAutomaticReconnect());
-        if (urls.length > 0) {
-            try {
-                URI vURI = new URI(urls[0]);
-                if (vURI.getScheme().equals(URI_TYPE_SSL)) {
-                    // 加密连接
-                    mConOpt.setSocketFactory(UnSafeTrustManager.getUnsafeOkHttpClient());
+        if (sslNoVerify) {
+            if (urls.length > 0) {
+                try {
+                    URI vURI = new URI(urls[0]);
+                    if (vURI.getScheme().equals(URI_TYPE_SSL)) {
+                        // 加密连接
+                        mConOpt.setSocketFactory(UnSafeTrustManager.getUnsafeOkHttpClient());
+                    }
+                } catch (URISyntaxException e) {
+                    NetLog.e("URISyntaxException:", e);
                 }
-            } catch (URISyntaxException e) {
-                NetLog.e("URISyntaxException:", e);
             }
+        }
+        if (usePeoxy && checkProxyBean(proxyBean)) {
+            Proxy.Type type = null;
+            switch (proxyBean.getType()) {
+                case ProxyBean.DIRECT:
+                    type = Proxy.Type.DIRECT;
+                    break;
+                case ProxyBean.HTTP:
+                    type = Proxy.Type.HTTP;
+                    break;
+                case ProxyBean.SOCKS:
+                    type = Proxy.Type.SOCKS;
+                    break;
+                default:
+                    break;
+            }
+            mConOpt.setSocketFactory(new ProxySocketFactory(proxyBean.getProxyHost(), proxyBean.getProxyPort(),type));
         }
         //TODO
 //        makeTopic();
@@ -608,7 +652,7 @@ public class MqttManager {
                 for (String s : messageList) {
                     String[] value = s.split(ADDSTRING);
                     if (value.length == 2) {
-                        if(isConnected()){
+                        if (isConnected()) {
                             mqttClient.publish(value[0], value[1].getBytes(), QOS_ONLYONE, false);
                             messageList.remove(s);
                         }

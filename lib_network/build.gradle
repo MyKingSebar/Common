@@ -3,7 +3,7 @@ apply plugin: 'maven'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
-def pomVersionName = '1.0.2-SNAPSHOT'
+def pomVersionName = '1.0.3-SNAPSHOT'
 def pomName = this.getName()
 def pomDescription = 'the mqtt library for all project'
 def versionString = '1.0'
@@ -44,6 +44,7 @@ dependencies {
     compileOnly rootProject.depsLibs.ktjdk
     implementation rootProject.depsLibs.mqttv3
     implementation rootProject.depsLibs.mqservice
+    implementation rootProject.depsLibs.commons_net
 }
 
 uploadArchives {

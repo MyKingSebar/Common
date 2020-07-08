@@ -4,8 +4,8 @@ ext {
                    recyclerview    : '28.0.0',
                    cardview        : '28.0.0',
 
-                   androidx_kt:'+',
-                   ktjdk:'',
+                   androidx_kt     : '+',
+                   ktjdk           : '',
 
                    constraint      : '1.1.3',
                    eventbus        : '3.1.1',
@@ -20,6 +20,7 @@ ext {
                    okhttp          : '3.4.1',
                    mqttv3          : '1.1.0',
                    mqservice       : '1.1.1',
+                   commonsnet      : '3.6',
                    fastjson        : '1.2.61',
                    permission      : '2.0.1',
                    utilcode        : '1.22.1',
@@ -73,8 +74,9 @@ ext {
                 retrofit_scalars: "com.squareup.retrofit2:converter-scalars:${depsVersion.retrofit_scalars}",
                 mqttv3          : "org.eclipse.paho:org.eclipse.paho.client.mqttv3:${depsVersion.mqttv3}",
                 mqservice       : "org.eclipse.paho:org.eclipse.paho.android.service:${depsVersion.mqservice}",
-                androidx_kt:"androidx.core:core-ktx:${depsVersion.androidx_kt}",
-                ktjdk:"org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+                commons_net   : "commons-net:commons-net:${depsVersion.commonsnet}",
+                androidx_kt     : "androidx.core:core-ktx:${depsVersion.androidx_kt}",
+                ktjdk           : "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
     ]
 }
