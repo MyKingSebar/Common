@@ -45,6 +45,7 @@ dependencies {
     implementation rootProject.depsLibs.mqttv3
     implementation rootProject.depsLibs.mqservice
     implementation rootProject.depsLibs.commons_net
+    implementation rootProject.depsLibs.localbroadcastx
 }
 
 uploadArchives {
