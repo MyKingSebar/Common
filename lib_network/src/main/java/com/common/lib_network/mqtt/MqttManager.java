@@ -11,6 +11,7 @@ import com.common.lib_network.NetCommon;
 import com.common.lib_network.NetLog;
 import com.common.lib_network.NetLogListener;
 import com.common.lib_network.mqtt.proxy.ProxyBean;
+import com.common.lib_network.mqtt.proxy.ProxyFactory;
 import com.common.lib_network.mqtt.proxy.ProxySocketFactory;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
@@ -43,6 +44,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * 7，关闭Mqtt，MqttManager.getInstance().close()，建议在MainActivity的onDestroy中调用。
  */
 public class MqttManager {
+    private static final String TAG="MqttManager";
     /**
      * Quality of Service等级是发送与接收端的一种关于保证交付信息的协议。一共有3 个QoS 等级：
      * 最多一次（0）
@@ -81,6 +83,8 @@ public class MqttManager {
     private ShortMqttConfigBean shortMqttConfigBean = null;
     private int canTryConnectTimes = 5;
     private int tryConnectLeftTimes = 5;
+
+    private Context mContext=null;
 
     /**
      * 代理
@@ -151,13 +155,21 @@ public class MqttManager {
     }
 
     public void init(Context context, MqttConfig config, NetLogListener listener, boolean useShortMqtt, ProxyBean proxyBean, boolean sslNoVerify) {
+        this.mContext=context;
         this.useShortMqtt = useShortMqtt;
         this.sslNoVerify = sslNoVerify;
         this.usePeoxy = checkProxyBean(proxyBean);
         this.proxyBean = proxyBean;
         logListener = listener;
         mqttConfig = config;
-        mqttClient = new MqttAndroidClient(context, config.getBaseUrl().split(",")[0], config.getClientId());
+        clientBuild();
+    }
+    private void clientBuild(){
+        if(mContext==null||mqttConfig==null){
+            NetLog.e("mContext==null||mqttConfig==null");
+            return;
+        }
+        mqttClient = new MqttAndroidClient(mContext, mqttConfig.getBaseUrl().split(",")[0], mqttConfig.getClientId()+System.currentTimeMillis());
         mqttClient.setCallback(new MqttCallbackExtended() {
             @Override
             public void connectComplete(boolean reconnect, String serverURI) {
@@ -257,10 +269,11 @@ public class MqttManager {
      * 表示当前方法的回调，并不会作用到全局
      */
     public void connect(final MqttSubscriberJ listener) {
-        if (mqttClient == null) {
-            NetLog.e("----> mqtt publish message failed, please init mqtt first.");
-            return;
-        }
+//        if (mqttClient == null) {
+//            NetLog.e("----> mqtt publish message failed, please init mqtt first.");
+//            return;
+//        }
+        clientBuild();
         if (listener != null) {
             mainListener = listener;
         }
@@ -275,13 +288,13 @@ public class MqttManager {
                     } else {
                         NetLog.e("----> connect success but MqttSubscriberJ is null");
                     }
-                    NetLog.d("----> mSubscribers:" + mSubscribers.size());
-                    for (ConcurrentHashMap.Entry<String, MqttSubscriberJ> entry : mSubscribers.entrySet()) {
-                        if (entry.getValue() != null) {
-                            entry.getValue().onConnectSuccess();
-                            NetLog.d("----> mSubscribers:entrySet " + entry.getValue().toString());
-                        }
-                    }
+//                    NetLog.d("----> mSubscribers:" + mSubscribers.size());
+//                    for (ConcurrentHashMap.Entry<String, MqttSubscriberJ> entry : mSubscribers.entrySet()) {
+//                        if (entry.getValue() != null) {
+//                            entry.getValue().onConnectSuccess();
+//                            NetLog.d("----> mSubscribers:entrySet " + entry.getValue().toString());
+//                        }
+//                    }
                     NetLog.d("----> mqtt connect success.");
                     DisconnectedBufferOptions disconnectedBufferOptions = new DisconnectedBufferOptions();
                     disconnectedBufferOptions.setBufferEnabled(true);
@@ -299,14 +312,14 @@ public class MqttManager {
 
                 @Override
                 public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-                    if (listener != null) {
-                        listener.onConnectFailed(exception);
+                    if (mainListener  != null) {
+                        mainListener .onConnectFailed(exception);
                     } else {
                         NetLog.e("----> connect onFailure but MqttSubscriberJ is null");
                     }
-                    for (ConcurrentHashMap.Entry<String, MqttSubscriberJ> entry : mSubscribers.entrySet()) {
-                        entry.getValue().onConnectFailed(exception);
-                    }
+//                    for (ConcurrentHashMap.Entry<String, MqttSubscriberJ> entry : mSubscribers.entrySet()) {
+//                        entry.getValue().onConnectFailed(exception);
+//                    }
                     if (exception == null) {
                         NetLog.e("connect.exception==null");
                         return;
@@ -506,7 +519,10 @@ public class MqttManager {
     public void disconnect() {
         try {
             if (mqttClient != null) {
+                mqttClient.close();
                 mqttClient.disconnect();
+                clear();
+                mqttClient.unregisterResources();
             }
 
         } catch (MqttException e) {
@@ -544,7 +560,12 @@ public class MqttManager {
     public void clear() {
         getSubscribers().clear();
     }
-
+    public boolean isUsePeoxy(){
+        return usePeoxy;
+    }
+    public ProxyBean getProxyBean(){
+        return proxyBean;
+    }
     private MqttConnectOptions generateConnectOptions() {
         mConOpt = new MqttConnectOptions();
         if (mqttConfig == null) {
@@ -600,7 +621,7 @@ public class MqttManager {
                 default:
                     break;
             }
-            mConOpt.setSocketFactory(new ProxySocketFactory(proxyBean.getProxyHost(), proxyBean.getProxyPort(),type));
+            mConOpt.setSocketFactory(new ProxyFactory(type,proxyBean.getProxyHost(), proxyBean.getProxyPort()));
         }
         //TODO
 //        makeTopic();
@@ -636,7 +657,7 @@ public class MqttManager {
                     break;
                 case OPEN:
                     NetLog.d("OPEN");
-                    reConnect();
+                    connect(null);
                     break;
                 default:
                     break;
@@ -645,36 +666,19 @@ public class MqttManager {
     }
 
     private void shortMqttPerformPublishMessage() {
-        try {
-
-
             if (mqttClient != null) {
                 for (String s : messageList) {
                     String[] value = s.split(ADDSTRING);
                     if (value.length == 2) {
                         if (isConnected()) {
-                            mqttClient.publish(value[0], value[1].getBytes(), QOS_ONLYONE, false);
+                            performPublishMessage(value[0], value[1]);
                             messageList.remove(s);
                         }
                     }
                 }
-//                Iterator<String> it = messageList.iterator();
-//
-//                while (it.hasNext()) {
-//                    String str = it.next();
-//                    String[] value=str.split(ADDSTRING);
-//                    if(value.length==2){
-//                        mqttClient.publish(value[1], value[1].getBytes(), QOS_ONLYONE, false);
-//                        it.remove();
-//                    }
-//                }
 
             }
             reflushClose();
-        } catch (MqttException e) {
-            e.printStackTrace();
-            NetLog.e(e.getMessage());
-        }
     }
 
     public void reflushClose() {
@@ -707,6 +711,66 @@ public class MqttManager {
             NetLog.e("----> mqtt publish message failed, please init mqtt first.");
             return;
         }
+        mqttClient.setCallback(new MqttCallbackExtended() {
+            @Override
+            public void connectComplete(boolean reconnect, String serverURI) {
+                if (reconnect) {
+                    NetLog.i("----> mqtt reconnect complete, serverUrl = " + serverURI);
+                } else {
+                    NetLog.i("----> mqtt connect complete, serverUrl = " + serverURI);
+                }
+            }
+
+            @Override
+            public void connectionLost(Throwable cause) {
+//                for (LinkedHashMap.Entry<String, MqttSubscriberJ> entry : mSubscribers.entrySet()) {
+//                    entry.getValue().onConnectionLost(cause);
+//                }
+                if (mainListener != null) {
+                    mainListener.getConnectionLostListener().onConnectionLost(cause);
+                }
+                if (cause == null) {
+                    NetLog.e("connectionLost.cause==null");
+                    return;
+                }
+                NetLog.e("connectionLost" + (cause.getMessage() == null ? "null" : cause.getMessage()));
+            }
+
+            @Override
+            public void messageArrived(String topic, MqttMessage message) {
+                NetLog.d("MQTT收到消息的topic=" + topic);
+                String msg = new String(message.getPayload());
+                MqttSubscriberJ subscriberJ = mSubscribers.get(topic);
+                if (subscriberJ != null) {
+                    NetLog.v("MQTT收到消息" + msg);
+                    subscriberJ.getMessageArrivedListener().onMessageArrived(topic, msg, message.getQos());
+                }
+            }
+
+            @Override
+            public void deliveryComplete(IMqttDeliveryToken token) {
+                try {
+
+                    if (mainListener != null) {
+                        mainListener.onDeliveryComplete((token.getMessage() == null ? "null" : token.getMessage().toString()));
+                    }
+//                    for (LinkedHashMap.Entry<String, MqttSubscriberJ> entry : mSubscribers.entrySet()) {
+//                        DeliveryCompleteListener listener = entry.getValue().getDeliveryCompleteListener();
+//                        if (listener != null&&token!=null) {
+//                            listener.onDeliveryComplete((token.getMessage()==null?"null":token.getMessage().toString()));
+//                        }
+//                    }
+                    NetLog.d("----> mqtt delivery complete, token = " + (token.getMessage() == null ? "null" : token.getMessage().toString()));
+                } catch (MqttException e) {
+                    e.printStackTrace();
+                    if (e == null) {
+                        NetLog.e("deliveryComplete.e==null");
+                        return;
+                    }
+                    NetLog.e("deliveryComplete()" + (e.getMessage() == null ? "null" : e.getMessage()));
+                }
+            }
+        });
         if (useShortMqtt) {
             shortMqttHandler.removeMessages(OPEN);
         }
@@ -723,14 +787,14 @@ public class MqttManager {
                         NetLog.e("----> connect success but mainListener is null");
                     }
                     NetLog.d("----> mSubscribers:" + mSubscribers.size());
-                    for (Map.Entry<String, MqttSubscriberJ> entry : mSubscribers.entrySet()) {
-                        if (entry.getValue() != null) {
-                            entry.getValue().onConnectSuccess();
-                            NetLog.d("----> mSubscribers:entrySet " + entry.getValue().toString());
-                        } else {
-                            NetLog.d("----> reConnect entry.getValue()!=null");
-                        }
-                    }
+//                    for (Map.Entry<String, MqttSubscriberJ> entry : mSubscribers.entrySet()) {
+//                        if (entry.getValue() != null) {
+//                            entry.getValue().onConnectSuccess();
+//                            NetLog.d("----> mSubscribers:entrySet " + entry.getValue().toString());
+//                        } else {
+//                            NetLog.d("----> reConnect entry.getValue()!=null");
+//                        }
+//                    }
                     NetLog.d("----> mqtt connect success.");
                     DisconnectedBufferOptions disconnectedBufferOptions = new DisconnectedBufferOptions();
                     disconnectedBufferOptions.setBufferEnabled(true);
@@ -752,16 +816,16 @@ public class MqttManager {
                     } else {
                         NetLog.e("----> connect onFailure but mainListener is null");
                     }
-                    for (Map.Entry<String, MqttSubscriberJ> entry : mSubscribers.entrySet()) {
-                        if (entry.getValue() != null) {
-                            if (entry.getValue() != null) {
-                                entry.getValue().onConnectFailed(exception);
-                            } else {
-                                NetLog.d("----> onConnectFailed onFailure entry.getValue()!=null");
-                            }
-
-                        }
-                    }
+//                    for (Map.Entry<String, MqttSubscriberJ> entry : mSubscribers.entrySet()) {
+//                        if (entry.getValue() != null) {
+//                            if (entry.getValue() != null) {
+//                                entry.getValue().onConnectFailed(exception);
+//                            } else {
+//                                NetLog.d("----> onConnectFailed onFailure entry.getValue()!=null");
+//                            }
+//
+//                        }
+//                    }
                     NetLog.e("----> mqtt connect failed, exception = " + exception.getMessage());
                 }
             });
