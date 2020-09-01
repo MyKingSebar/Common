@@ -164,6 +164,12 @@ public class MqttManager {
         mqttConfig = config;
         clientBuild();
     }
+    public boolean isUsePeoxy(){
+        return usePeoxy;
+    }
+    public ProxyBean getProxyBean(){
+        return proxyBean;
+    }
     private void clientBuild(){
         if(mContext==null||mqttConfig==null){
             NetLog.e("mContext==null||mqttConfig==null");
@@ -283,8 +289,8 @@ public class MqttManager {
                 @Override
                 public void onSuccess(IMqttToken asyncActionToken) {
                     resetTryConnectLeftTimes();
-                    if (listener != null) {
-                        listener.onConnectSuccess();
+                    if (mainListener != null) {
+                        mainListener.onConnectSuccess();
                     } else {
                         NetLog.e("----> connect success but MqttSubscriberJ is null");
                     }
@@ -561,12 +567,7 @@ public class MqttManager {
     public void clear() {
         getSubscribers().clear();
     }
-    public boolean isUsePeoxy(){
-        return usePeoxy;
-    }
-    public ProxyBean getProxyBean(){
-        return proxyBean;
-    }
+
     private MqttConnectOptions generateConnectOptions() {
         mConOpt = new MqttConnectOptions();
         if (mqttConfig == null) {

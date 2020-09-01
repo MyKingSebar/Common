@@ -3,7 +3,7 @@ apply plugin: 'maven'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
-def pomVersionName = '1.0.5-SNAPSHOT'
+def pomVersionName = '1.0.6-SNAPSHOT'
 def pomName = this.getName()
 def pomDescription = 'the mqtt library for all project'
 def versionString = '1.0'
