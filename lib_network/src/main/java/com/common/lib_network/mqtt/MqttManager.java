@@ -519,12 +519,13 @@ public class MqttManager {
     public void disconnect() {
         try {
             if (mqttClient != null) {
-                mqttClient.close();
-                mqttClient.disconnect();
                 clear();
                 mqttClient.unregisterResources();
+                if(isConnected()){
+                    mqttClient.disconnect();
+                }
+                mqttClient.close();
             }
-
         } catch (MqttException e) {
             e.printStackTrace();
             NetLog.e("disconnect()" + (e.getMessage() == null ? "null" : e.getMessage()));
