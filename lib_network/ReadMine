@@ -43,3 +43,6 @@ MqttManager.getInstance. getSubscribers（）
 
 mqtt短链接
 setShortMqttConfigBean()
+
+net:1.0.5  修复重连机制订阅问题
+使用的时候  重连的时候需要先 调用disconnect方法
