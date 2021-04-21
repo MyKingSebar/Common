@@ -19,6 +19,7 @@ import io.reactivex.schedulers.Schedulers;
 public class RxTimerUtil {
     private static final String TAG = "RxTimerUtil";
     private Disposable mDisposable;
+    public boolean defaultLog=false;
 
     enum TimerType {
         //主线程
@@ -51,13 +52,19 @@ public class RxTimerUtil {
                 .subscribe(new Observer<Long>() {
                     @Override
                     public void onSubscribe(@NonNull Disposable disposable) {
-                        CommonLog.d(TAG, "onSubscribe:" + disposable);
+                        if(defaultLog){
+                            CommonLog.d(TAG, "onSubscribe:" + disposable);
+                        }
+
                         mDisposable = disposable;
                     }
 
                     @Override
                     public void onNext(@NonNull Long number) {
-                        CommonLog.d(TAG, "onNext:" + number);
+                        if(defaultLog){
+                            CommonLog.d(TAG, "onNext:" + number);
+                        }
+
                         if (next != null) {
                             next.doNext(number);
                         }
@@ -65,7 +72,10 @@ public class RxTimerUtil {
 
                     @Override
                     public void onError(@NonNull Throwable e) {
-                        CommonLog.d(TAG, "onError:", e);
+                        if(defaultLog){
+                            CommonLog.d(TAG, "onError:", e);
+                        }
+
                         //取消订阅
                         cancel();
                     }
@@ -173,10 +183,16 @@ public class RxTimerUtil {
      * 取消订阅
      */
     public void cancel() {
-        CommonLog.d(TAG, "cancel");
+        if(defaultLog){
+            CommonLog.d(TAG, "cancel");
+        }
+
         if (mDisposable != null && !mDisposable.isDisposed()) {
             mDisposable.dispose();
-            CommonLog.d(TAG, "定时器取消");
+            if(defaultLog){
+                CommonLog.d(TAG, "定时器取消");
+            }
+
         }
     }
 
